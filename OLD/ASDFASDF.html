@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>To-Do List</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color: #121212;
+            color: #e0e0e0;
+            margin: 0;
+        }
+        .container {
+            background: #1e1e1e;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(255, 255, 255, 0.1);
+            width: 100vw;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .columns {
+            display: flex;
+            gap: 20px;
+            width: 90%;
+            justify-content: space-between;
+            height: 70vh;
+        }
+        .column {
+            width: 32%;
+            padding: 10px;
+            background: #2c2c2c;
+            border-radius: 10px;
+            box-shadow: 0 0 5px rgba(255, 255, 255, 0.1);
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+        }
+        ul {
+            list-style: none;
+            padding: 0;
+            min-height: 100px;
+            flex-grow: 1;
+            overflow-y: auto;
+        }
+        li {
+            padding: 10px;
+            border: 1px solid #444;
+            margin-bottom: 5px;
+            cursor: grab;
+            background: #3a3a3a;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            color: #e0e0e0;
+        }
+        .date {
+            font-size: 0.8em;
+            color: #bbb;
+        }
+        .overdue {
+            background: #8b0000 !important;
+            color: #fff !important;
+        }
+        .done-late {
+            background: #ffcc00 !important;
+            color: #000 !important;
+        }
+        .done-on-time {
+            background: #008000 !important;
+            color: #fff !important;
+        }
+        input, button {
+            background: #333;
+            color: #e0e0e0;
+            border: 1px solid #555;
+            padding: 5px;
+            margin: 5px;
+            border-radius: 5px;
+        }
+        button:hover {
+            background: #444;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>To-Do List</h2>
+        <input type="text" id="taskInput" placeholder="Nova tarefa">
+        <input type="datetime-local" id="taskDeadline" placeholder="Prazo de conclusão">
+        <button onclick="addTask()">Adicionar</button>
+        <div class="columns">
+            <div class="column" ondrop="drop(event)" ondragover="allowDrop(event)">
+                <h3>A Fazer</h3>
+                <ul id="todoList"></ul>
+            </div>
+            <div class="column" ondrop="drop(event)" ondragover="allowDrop(event)">
+                <h3>Fazendo</h3>
+                <ul id="doingList"></ul>
+            </div>
+            <div class="column" ondrop="drop(event)" ondragover="allowDrop(event)">
+                <h3>Concluído</h3>
+                <ul id="doneList"></ul>
+            </div>
+        </div>
+    </div>
+
+    <script>
+    function addTask() {
+        let taskInput = document.getElementById("taskInput");
+        let taskDeadline = document.getElementById("taskDeadline");
+        let taskText = taskInput.value.trim();
+        let deadlineValue = taskDeadline.value;
+        let deadlineText = deadlineValue ? `Prazo: ${new Date(deadlineValue).toLocaleString()}` : "Sem prazo";
+
+        if (taskText === "") return;
+
+        let li = document.createElement("li");
+        li.innerHTML = `<span>${taskText}</span> <span class="date">${deadlineText}</span>`;
+        li.draggable = true;
+        li.ondragstart = drag;
+
+        // Verifica se está atrasado e aplica a cor vermelha
+        if (deadlineValue && new Date(deadlineValue) < new Date()) {
+            li.classList.add("overdue");
+        }
+
+        document.getElementById("todoList").appendChild(li);
+        taskInput.value = "";
+        taskDeadline.value = "";
+    }
+
+    function allowDrop(event) {
+        event.preventDefault();
+    }
+
+    function drag(event) {
+        event.dataTransfer.setData("text/plain", event.target.outerHTML);
+        setTimeout(() => event.target.remove(), 0);
+    }
+
+    function drop(event) {
+        event.preventDefault();
+        let data = event.dataTransfer.getData("text/plain");
+        let ul = event.target.closest(".column").querySelector("ul");
+        ul.insertAdjacentHTML("beforeend", data);
+        let newTask = ul.lastElementChild;
+        newTask.draggable = true;
+        newTask.ondragstart = drag;
+
+        // Pega a data de vencimento da tarefa
+        let deadlineText = newTask.querySelector(".date").textContent.split("Prazo: ")[1]?.split(" |")[0];
+        let deadlineDate = new Date(deadlineText);
+
+        // Remove classes de status antes de aplicar a nova
+        newTask.classList.remove("overdue", "done-late", "done-on-time");
+
+        if (ul.id === "doneList") {
+            // Se a tarefa foi concluída, adiciona a data de conclusão
+            let date = new Date().toLocaleString();
+            newTask.querySelector(".date").textContent += ` | Concluído em: ${date}`;
+
+            // Se a tarefa foi concluída com atraso, fica amarela
+            if (deadlineDate && deadlineDate < new Date()) {
+                newTask.classList.add("done-late");
+            } else {
+                newTask.classList.add("done-on-time");
+            }
+        } else {
+            // Se a tarefa ainda não está concluída e está atrasada, mantém vermelho
+            if (deadlineDate && deadlineDate < new Date()) {
+                newTask.classList.add("overdue");
+            }
+        }
+    }
+</script>
+
+</body>
+</html>

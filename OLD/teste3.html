@@ -1,0 +1,360 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Todo List - Dark Theme</title>
+    <style>
+        body {
+            background-color: #1a1a1a;
+            color: #e0e0e0;
+            margin: 0;
+            font-family: Arial, sans-serif;
+        }
+
+        .todo-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .add-todo {
+            background-color: #2d2d2d;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+        }
+
+        .add-todo .form-group {
+            margin-bottom: 15px;
+        }
+
+        .add-todo label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+            color: #e0e0e0;
+        }
+
+        .add-todo input {
+            padding: 10px;
+            margin-right: 10px;
+            width: 100%;
+            box-sizing: border-box;
+            background-color: #3d3d3d;
+            border: 1px solid #4d4d4d;
+            color: #e0e0e0;
+            border-radius: 4px;
+        }
+
+        .add-todo input:focus {
+            outline: none;
+            border-color: #666;
+            background-color: #454545;
+        }
+
+        .add-todo button {
+            padding: 10px 20px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            cursor: pointer;
+            border-radius: 4px;
+            width: 100%;
+            margin-top: 10px;
+            font-weight: bold;
+        }
+
+        .add-todo button:hover {
+            background-color: #45a049;
+        }
+
+        .lists-container {
+            display: flex;
+            gap: 20px;
+        }
+
+        .list {
+            flex: 1;
+            background-color: #2d2d2d;
+            padding: 20px;
+            border-radius: 8px;
+            min-width: 300px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+        }
+
+        .list.dragover {
+            background-color: #353535;
+            border: 2px dashed #666;
+        }
+
+        .list h2 {
+            margin-top: 0;
+            color: #e0e0e0;
+            font-size: 1.2em;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #3d3d3d;
+        }
+
+        .todo-item {
+            display: flex;
+            flex-direction: column;
+            padding: 15px;
+            margin: 10px 0;
+            background-color: #3d3d3d;
+            border-radius: 6px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+            cursor: move;
+            transition: all 0.2s ease;
+        }
+
+        .todo-item:hover {
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+            transform: translateY(-2px);
+            background-color: #454545;
+        }
+
+        .todo-item.dragging {
+            opacity: 0.5;
+            transform: scale(0.95);
+        }
+
+        .todo-item.overdue {
+            background-color: #524c23;
+            border-left: 4px solid #ffd700;
+        }
+
+        .todo-item.overdue .deadline-warning {
+            color: #ffd700;
+            font-weight: bold;
+            margin-top: 5px;
+        }
+
+        .todo-item-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 8px;
+        }
+
+        .todo-item-title {
+            font-weight: bold;
+            color: #e0e0e0;
+            font-size: 1.1em;
+        }
+
+        .todo-item-details {
+            font-size: 0.9em;
+            color: #b0b0b0;
+            margin: 5px 0;
+        }
+
+        .completion-date {
+            color: #4CAF50;
+            font-size: 0.9em;
+            margin-top: 8px;
+            padding-top: 8px;
+            border-top: 1px dashed #4d4d4d;
+        }
+
+        .delete-btn {
+            background-color: #ff4444;
+            color: white;
+            border: none;
+            padding: 6px 12px;
+            border-radius: 4px;
+            cursor: pointer;
+            margin-top: 8px;
+            align-self: flex-end;
+            font-size: 0.9em;
+        }
+
+        .delete-btn:hover {
+            background-color: #cc0000;
+        }
+
+        ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+            min-height: 50px;
+        }
+
+        @media (max-width: 768px) {
+            .lists-container {
+                flex-direction: column;
+            }
+            
+            .list {
+                margin-bottom: 20px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="todo-container">
+        <h1>Todo List</h1>
+        
+        <div class="add-todo">
+            <div class="form-group">
+                <label for="newTodo">Título da Tarefa</label>
+                <input type="text" id="newTodo" placeholder="Digite o título da tarefa">
+            </div>
+            <div class="form-group">
+                <label for="responsible">Responsável</label>
+                <input type="text" id="responsible" placeholder="Nome do responsável">
+            </div>
+            <div class="form-group">
+                <label for="deadline">Prazo</label>
+                <input type="date" id="deadline">
+            </div>
+            <button onclick="addTodo()">Adicionar Tarefa</button>
+        </div>
+
+        <div class="lists-container">
+            <div class="list" data-status="todo">
+                <h2>A Fazer</h2>
+                <ul id="todoList"></ul>
+            </div>
+
+            <div class="list" data-status="doing">
+                <h2>Fazendo</h2>
+                <ul id="doingList"></ul>
+            </div>
+
+            <div class="list" data-status="done">
+                <h2>Concluído</h2>
+                <ul id="doneList"></ul>
+            </div>
+        </div>
+    </div>
+
+<body>
+
+   <script>
+    let todos = JSON.parse(localStorage.getItem('todos')) || {
+        todo: [],
+        doing: [],
+        done: []
+    };
+
+    function saveTodos() {
+        localStorage.setItem('todos', JSON.stringify(todos));
+    }
+
+    function formatDate(date) {
+        return new Date(date).toLocaleDateString('pt-BR');
+    }
+
+    function addTodo() {
+        const titleInput = document.getElementById('newTodo');
+        const responsibleInput = document.getElementById('responsible');
+        const deadlineInput = document.getElementById('deadline');
+        
+        const title = titleInput.value.trim();
+        const responsible = responsibleInput.value.trim();
+        const deadline = deadlineInput.value;
+        
+        if (title && responsible && deadline) {
+            const todo = {
+                id: Date.now(),
+                title: title,
+                responsible: responsible,
+                deadline: deadline
+            };
+            
+            todos.todo.push(todo);
+            saveTodos();
+            renderLists();
+            
+            titleInput.value = '';
+            responsibleInput.value = '';
+            deadlineInput.value = '';
+        } else {
+            alert('Por favor, preencha todos os campos!');
+        }
+    }
+
+    function deleteTask(id, status) {
+        todos[status] = todos[status].filter(todo => todo.id !== id);
+        saveTodos();
+        renderLists();
+    }
+
+    function moveTask(id, fromStatus, toStatus) {
+        const taskIndex = todos[fromStatus].findIndex(todo => todo.id === id);
+        if (taskIndex !== -1) {
+            const task = todos[fromStatus].splice(taskIndex, 1)[0];
+            todos[toStatus].push(task);
+            saveTodos();
+            renderLists();
+        }
+    }
+
+    function renderLists() {
+        ['todo', 'doing', 'done'].forEach(status => {
+            const list = document.getElementById(`${status}List`);
+            list.innerHTML = '';
+            
+            todos[status].forEach(todo => {
+                const li = document.createElement('li');
+                li.className = 'todo-item';
+                li.draggable = true;
+                li.dataset.id = todo.id;
+                li.dataset.status = status;
+                
+                li.innerHTML = `
+                    <div class="todo-item-header">
+                        <span class="todo-item-title">${todo.title}</span>
+                    </div>
+                    <div class="todo-item-details">
+                        <div>Responsável: ${todo.responsible}</div>
+                        <div>Prazo: ${formatDate(todo.deadline)}</div>
+                    </div>
+                    <button class="delete-btn" onclick="deleteTask(${todo.id}, '${status}')">Excluir</button>
+                `;
+
+                li.addEventListener('dragstart', handleDragStart);
+                li.addEventListener('dragend', handleDragEnd);
+                
+                list.appendChild(li);
+            });
+        });
+    }
+
+    function handleDragStart(e) {
+        e.target.classList.add('dragging');
+        e.dataTransfer.setData('text/plain', JSON.stringify({
+            id: e.target.dataset.id,
+            status: e.target.dataset.status
+        }));
+    }
+
+    function handleDragEnd(e) {
+        e.target.classList.remove('dragging');
+    }
+
+    function handleDrop(e) {
+        e.preventDefault();
+        const list = e.target.closest('.list');
+        if (!list) return;
+        list.classList.remove('dragover');
+        const data = JSON.parse(e.dataTransfer.getData('text/plain'));
+        const newStatus = list.dataset.status;
+        if (data.status !== newStatus) {
+            moveTask(parseInt(data.id), data.status, newStatus);
+        }
+    }
+
+    document.querySelectorAll('.list').forEach(list => {
+        list.addEventListener('dragover', e => e.preventDefault());
+        list.addEventListener('drop', handleDrop);
+    });
+
+    renderLists();
+</script>
+</body>
+</html>

@@ -1,0 +1,785 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Todo List - Dark Theme</title>
+    <style>
+        body {
+            background-color: #1a1a1a;
+            color: #e0e0e0;
+            margin: 0;
+            font-family: Arial, sans-serif;
+        }
+
+        .todo-container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .add-todo {
+            background-color: #2d2d2d;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+        }
+
+        .add-todo .form-group {
+            margin-bottom: 15px;
+        }
+
+        .add-todo label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+            color: #e0e0e0;
+        }
+
+        .add-todo input {
+            padding: 10px;
+            margin-right: 10px;
+            width: 100%;
+            box-sizing: border-box;
+            background-color: #3d3d3d;
+            border: 1px solid #4d4d4d;
+            color: #e0e0e0;
+            border-radius: 4px;
+        }
+
+        .add-todo input:focus {
+            outline: none;
+            border-color: #666;
+            background-color: #454545;
+        }
+
+        .add-todo button {
+            padding: 10px 20px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            cursor: pointer;
+            border-radius: 4px;
+            width: 100%;
+            margin-top: 10px;
+            font-weight: bold;
+        }
+
+        .add-todo button:hover {
+            background-color: #45a049;
+        }
+
+        .lists-container {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .list {
+            background-color: #2d2d2d;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+            width: 100%;
+        }
+
+        .list.dragover {
+            background-color: #353535;
+            border: 2px dashed #666;
+        }
+
+        .list h2 {
+            margin-top: 0;
+            color: #e0e0e0;
+            font-size: 1.2em;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #3d3d3d;
+        }
+
+        .todo-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px;
+            margin: 10px 0;
+            background-color: #3d3d3d;
+            border-radius: 6px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+            cursor: move;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .todo-item:hover {
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+            transform: translateY(-2px);
+            background-color: #454545;
+        }
+
+        .todo-item.dragging {
+            opacity: 0.5;
+            transform: scale(0.95);
+        }
+
+        .todo-item.overdue {
+            background-color: #524c23;
+            border-left: 4px solid #ffd700;
+        }
+
+        .todo-item-content {
+            flex: 1;
+            display: flex;
+            gap: 20px;
+            align-items: center;
+        }
+
+        .todo-item-title {
+            font-weight: bold;
+            min-width: 200px;
+        }
+
+        .todo-item-details {
+            display: flex;
+            gap: 20px;
+            color: #b0b0b0;
+            flex: 1;
+        }
+
+        .deadline-warning {
+            color: #ffd700;
+            font-weight: bold;
+        }
+
+        .completion-date {
+            color: #4CAF50;
+        }
+
+        /* .todo-item-actions {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        } */
+        .edit-btn {
+            background-color: #4a9eff;
+            color: white;
+            border: none;
+            padding: 6px 12px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.9em;
+            margin-right: 8px;
+        }
+
+        .edit-btn:hover {
+            background-color: #3d84d4;
+        }
+
+        .todo-item-actions {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+        }
+
+        .delete-btn {
+            background-color: #ff4444;
+            color: white;
+            border: none;
+            padding: 6px 12px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.9em;
+        }
+
+        .delete-btn:hover {
+            background-color: #cc0000;
+        }
+
+        .add-button {
+            padding: 12px 24px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            cursor: pointer;
+            border-radius: 4px;
+            font-weight: bold;
+            margin-bottom: 20px;
+            font-size: 1.1em;
+        }
+
+        .add-button:hover {
+            background-color: #45a049;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+            backdrop-filter: blur(5px);
+        }
+
+        .modal-content {
+            position: relative;
+            background-color: #2d2d2d;
+            margin: 10% auto;
+            padding: 20px;
+            border-radius: 8px;
+            width: 90%;
+            max-width: 500px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+            animation: modalSlide 0.3s ease-out;
+        }
+
+        @keyframes modalSlide {
+            from {
+                transform: translateY(-30px);
+                opacity: 0;
+            }
+
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        .modal .form-group {
+            margin-bottom: 15px;
+        }
+
+        .modal label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+            color: #e0e0e0;
+        }
+
+        .modal input {
+            padding: 10px;
+            width: 100%;
+            box-sizing: border-box;
+            background-color: #3d3d3d;
+            border: 1px solid #4d4d4d;
+            color: #e0e0e0;
+            border-radius: 4px;
+        }
+
+        .modal input:focus {
+            outline: none;
+            border-color: #666;
+            background-color: #454545;
+        }
+
+        .modal-buttons {
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        .modal-button {
+            padding: 10px 20px;
+            border: none;
+            cursor: pointer;
+            border-radius: 4px;
+            font-weight: bold;
+        }
+
+        .modal-save {
+            background-color: #4CAF50;
+            color: white;
+        }
+
+        .modal-save:hover {
+            background-color: #45a049;
+        }
+
+        .modal-cancel {
+            background-color: #666;
+            color: white;
+        }
+
+        .modal-cancel:hover {
+            background-color: #555;
+        }
+
+        .modal-title {
+            margin-top: 0;
+            margin-bottom: 20px;
+        }
+
+        .close-button {
+            position: absolute;
+            right: 10px;
+            top: 10px;
+            background: none;
+            border: none;
+            color: #e0e0e0;
+            font-size: 1.5em;
+            cursor: pointer;
+            padding: 5px;
+            line-height: 1;
+        }
+
+        .close-button:hover {
+            color: #fff;
+        }
+
+        ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+            min-height: 50px;
+        }
+
+        /* Responsive adjustments */
+        @media (max-width: 768px) {
+            .todo-item {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .todo-item-content {
+                flex-direction: column;
+                gap: 10px;
+                width: 100%;
+            }
+
+            .todo-item-details {
+                flex-direction: column;
+                gap: 5px;
+            }
+
+            .todo-item-actions {
+                width: 100%;
+                justify-content: flex-end;
+                margin-top: 10px;
+            }
+        }
+
+        .list-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            cursor: pointer;
+            padding-right: 10px;
+        }
+
+        .list-header h2 {
+            margin: 0;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .task-count {
+            background-color: #4CAF50;
+            color: white;
+            padding: 2px 8px;
+            border-radius: 12px;
+            font-size: 0.8em;
+            min-width: 20px;
+            text-align: center;
+        }
+
+        .accordion-icon {
+            transition: transform 0.3s ease;
+            font-size: 1.2em;
+            color: #e0e0e0;
+        }
+
+        .accordion-icon.collapsed {
+            transform: rotate(-90deg);
+        }
+
+        #doneList {
+            overflow: hidden;
+            transition: max-height 0.3s ease-out;
+        }
+
+        #doneList.collapsed {
+            max-height: 0;
+        }
+
+        #doneList.expanded {
+            max-height: 1000px;
+            /* Ajuste este valor conforme necessário */
+        }
+
+        .list-content {
+            transition: opacity 0.3s ease;
+        }
+
+        .list-content.collapsed {
+            opacity: 0;
+        }
+
+        .list-content.expanded {
+            opacity: 1;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="todo-container">
+        <h1>Lista de Atividades</h1>
+
+        <button class="add-button" onclick="openModal()">+ Nova Tarefa</button>
+
+        <!-- Modal -->
+        <div id="todoModal" class="modal">
+            <div class="modal-content">
+                <button class="close-button" onclick="closeModal()">&times;</button>
+                <h2 class="modal-title">Nova Tarefa</h2>
+                <div class="form-group">
+                    <label for="newTodo">Título da Tarefa</label>
+                    <input type="text" id="newTodo" placeholder="Digite o título da tarefa">
+                </div>
+                <div class="form-group">
+                    <label for="responsible">Responsável</label>
+                    <input type="text" id="responsible" placeholder="Nome do responsável">
+                </div>
+                <div class="form-group">
+                    <label for="deadline">Prazo</label>
+                    <input type="date" id="deadline">
+                </div>
+                <input type="hidden" id="editingTaskId" value="">
+                <input type="hidden" id="editingTaskStatus" value="">
+                <div class="modal-buttons">
+                    <button class="modal-button modal-cancel" onclick="closeModal()">Cancelar</button>
+                    <button class="modal-button modal-save" onclick="saveTask()">Salvar</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="lists-container">
+            <div class="list" data-status="todo">
+                <h2>A Fazer</h2>
+                <ul id="todoList"></ul>
+            </div>
+
+            <div class="list" data-status="doing">
+                <h2>Fazendo</h2>
+                <ul id="doingList"></ul>
+            </div>
+
+            <div class="list" data-status="done">
+                <div class="list-header" onclick="toggleDoneList()">
+                    <h2>
+                        Concluído
+                        <span class="task-count">0</span>
+                    </h2>
+                    <span class="accordion-icon">▼</span>
+                </div>
+                <ul id="doneList" class="expanded"></ul>
+            </div>
+        </div>
+
+    </div>
+
+    <body>
+
+        <script>
+            let todos = {
+                todo: [],
+                doing: [],
+                done: []
+            };
+
+            let isEditing = false;
+
+            function formatDate(date) {
+                const d = new Date(date);
+                d.setMinutes(d.getMinutes() + d.getTimezoneOffset());
+                return d.toLocaleDateString('pt-BR');
+            }
+
+            function formatDateTime(date) {
+                return new Date(date).toLocaleString('pt-BR');
+            }
+
+            function isOverdue(deadline) {
+                const today = new Date();
+                today.setHours(0, 0, 0, 0);
+                const deadlineDate = new Date(deadline);
+                return deadlineDate < today;
+            }
+
+            function openModal(taskId, status) {
+                const modal = document.getElementById('todoModal');
+                const modalTitle = modal.querySelector('.modal-title');
+
+                if (taskId) {
+                    // Modo edição
+                    isEditing = true;
+                    const task = todos[status].find(t => t.id === taskId);
+                    if (task) {
+                        document.getElementById('newTodo').value = task.title;
+                        document.getElementById('responsible').value = task.responsible;
+                        document.getElementById('deadline').value = task.deadline.split('T')[0];
+                        document.getElementById('editingTaskId').value = taskId;
+                        document.getElementById('editingTaskStatus').value = status;
+                        modalTitle.textContent = 'Editar Tarefa';
+                    }
+                } else {
+                    // Modo criação
+                    isEditing = false;
+                    document.getElementById('newTodo').value = '';
+                    document.getElementById('responsible').value = '';
+                    document.getElementById('deadline').value = '';
+                    document.getElementById('editingTaskId').value = '';
+                    document.getElementById('editingTaskStatus').value = '';
+                    modalTitle.textContent = 'Nova Tarefa';
+                }
+
+                modal.style.display = 'block';
+                document.getElementById('newTodo').focus();
+            }
+
+            function closeModal() {
+                document.getElementById('todoModal').style.display = 'none';
+                isEditing = false;
+            }
+
+            function saveTask() {
+                const title = document.getElementById('newTodo').value.trim();
+                const responsible = document.getElementById('responsible').value.trim();
+                const deadline = document.getElementById('deadline').value;
+                const editingTaskId = document.getElementById('editingTaskId').value;
+                const editingTaskStatus = document.getElementById('editingTaskStatus').value;
+
+                if (title && responsible && deadline) {
+                    if (isEditing && editingTaskId) {
+                        // Atualizar tarefa existente
+                        const taskIndex = todos[editingTaskStatus].findIndex(t => t.id === parseInt(editingTaskId));
+                        if (taskIndex !== -1) {
+                            todos[editingTaskStatus][taskIndex] = {
+                                ...todos[editingTaskStatus][taskIndex],
+                                title,
+                                responsible,
+                                deadline,
+                            };
+                        }
+                    } else {
+                        // Criar nova tarefa
+                        const todo = {
+                            id: Date.now(),
+                            title,
+                            responsible,
+                            deadline,
+                            createdAt: new Date().toISOString(),
+                            completedAt: null
+                        };
+                        todos.todo.push(todo);
+                    }
+
+                    saveToLocalStorage();
+                    closeModal();
+                    renderLists();
+                } else {
+                    alert('Por favor, preencha todos os campos!');
+                }
+            }
+
+            function deleteTask(id, status) {
+                if (confirm('Tem certeza que deseja excluir esta tarefa?')) {
+                    todos[status] = todos[status].filter(todo => todo.id !== id);
+                    saveToLocalStorage();
+                    renderLists();
+                }
+            }
+
+            let isDoneListCollapsed = false;
+
+            function toggleDoneList() {
+                const doneList = document.getElementById('doneList');
+                const accordionIcon = document.querySelector('.accordion-icon');
+                const taskCount = document.querySelector('.task-count');
+
+                isDoneListCollapsed = !isDoneListCollapsed;
+
+                if (isDoneListCollapsed) {
+                    doneList.classList.remove('expanded');
+                    doneList.classList.add('collapsed');
+                    accordionIcon.classList.add('collapsed');
+                } else {
+                    doneList.classList.remove('collapsed');
+                    doneList.classList.add('expanded');
+                    accordionIcon.classList.remove('collapsed');
+                }
+            }
+
+            function renderLists() {
+                ['todo', 'doing', 'done'].forEach(status => {
+                    const list = document.getElementById(`${status}List`);
+                    list.innerHTML = '';
+
+                    // Atualizar o contador de tarefas concluídas
+                    if (status === 'done') {
+                        const taskCount = document.querySelector('.task-count');
+                        taskCount.textContent = todos[status].length;
+                    }
+
+                    todos[status].forEach(todo => {
+                        const li = document.createElement('li');
+                        const isTaskOverdue = isOverdue(todo.deadline) && status !== 'done';
+
+                        li.className = `todo-item ${isTaskOverdue ? 'overdue' : ''}`;
+                        li.draggable = true;
+                        li.dataset.id = todo.id;
+                        li.dataset.status = status;
+
+                        // ... Rest of the todo item HTML structure remains the same ...
+                        li.innerHTML = `
+                        <div class="todo-item-content">
+                            <span class="todo-item-title">${todo.title}</span>
+                            <div class="todo-item-details">
+                                <div>Responsável: ${todo.responsible}</div>
+                                <div>Prazo: ${formatDate(todo.deadline)}</div>
+                                ${isTaskOverdue ? `<div class="deadline-warning">⚠️ Atividade atrasada!</div>` : ''}
+                                ${todo.completedAt ? `<div class="completion-date">✓ Concluído em: ${formatDateTime(todo.completedAt)}</div>` : ''}
+                            </div>
+                        </div>
+                        <div class="todo-item-actions">
+                            <button class="edit-btn" onclick="openModal(${todo.id}, '${status}')">Editar</button>
+                            <button class="delete-btn" onclick="deleteTask(${todo.id}, '${status}')">Excluir</button>
+                        </div>
+                    `;
+
+                        li.addEventListener('dragstart', handleDragStart);
+                        li.addEventListener('dragend', handleDragEnd);
+
+                        list.appendChild(li);
+                    });
+                });
+            }
+
+            function handleDragStart(e) {
+                e.target.classList.add('dragging');
+                e.dataTransfer.setData('text/plain', JSON.stringify({
+                    id: parseInt(e.target.dataset.id),
+                    status: e.target.dataset.status
+                }));
+            }
+
+            function handleDragEnd(e) {
+                e.target.classList.remove('dragging');
+                document.querySelectorAll('.list').forEach(list => {
+                    list.classList.remove('dragover');
+                });
+            }
+
+            function handleDragOver(e) {
+                e.preventDefault();
+                const list = e.target.closest('.list');
+                if (list) {
+                    list.classList.add('dragover');
+                }
+            }
+
+            function handleDragLeave(e) {
+                const list = e.target.closest('.list');
+                if (list) {
+                    list.classList.remove('dragover');
+                }
+            }
+
+            function moveTask(id, fromStatus, toStatus) {
+                const taskIndex = todos[fromStatus].findIndex(todo => todo.id === id);
+                if (taskIndex !== -1) {
+                    const task = todos[fromStatus].splice(taskIndex, 1)[0];
+
+                    if (toStatus === 'done' && !task.completedAt) {
+                        task.completedAt = new Date().toISOString();
+                    }
+                    if (toStatus !== 'done') {
+                        task.completedAt = null;
+                    }
+
+                    todos[toStatus].push(task);
+                    saveToLocalStorage();
+                    renderLists();
+                }
+            }
+
+            function handleDrop(e) {
+                e.preventDefault();
+
+                const list = e.target.closest('.list');
+                if (!list) return;
+
+                list.classList.remove('dragover');
+
+                try {
+                    const data = JSON.parse(e.dataTransfer.getData('text/plain'));
+                    const newStatus = list.dataset.status;
+
+                    if (data.status !== newStatus) {
+                        moveTask(data.id, data.status, newStatus);
+                    }
+                } catch (error) {
+                    console.error('Erro ao mover a tarefa:', error);
+                }
+            }
+
+            function initializeDragAndDrop() {
+                document.querySelectorAll('.list').forEach(list => {
+                    list.addEventListener('dragover', handleDragOver);
+                    list.addEventListener('dragleave', handleDragLeave);
+                    list.addEventListener('drop', handleDrop);
+                });
+            }
+
+            document.querySelectorAll('.list').forEach(list => {
+                list.addEventListener('dragover', handleDragOver);
+                list.addEventListener('dragleave', handleDragLeave);
+                list.addEventListener('drop', handleDrop);
+            });
+
+            document.addEventListener('DOMContentLoaded', () => {
+                loadFromLocalStorage();
+                initializeDragAndDrop();
+
+                // Atualizar o contador inicial
+                const taskCount = document.querySelector('.task-count');
+                taskCount.textContent = todos.done.length;
+            });
+            document.addEventListener('keypress', function (e) {
+                if (e.key === 'Enter') {
+                    const activeElement = document.activeElement;
+                    if (['newTodo', 'responsible', 'deadline'].includes(activeElement.id)) {
+                        addTodo();
+                    }
+                }
+            });
+
+            document.addEventListener('keydown', function (e) {
+                if (e.key === 'Escape' && document.getElementById('todoModal').style.display === 'block') {
+                    closeModal();
+                }
+            });
+
+            function saveToLocalStorage() {
+                localStorage.setItem('todos', JSON.stringify(todos));
+            }
+
+            function loadFromLocalStorage() {
+                const storedTodos = localStorage.getItem('todos');
+                if (storedTodos) {
+                    todos = JSON.parse(storedTodos);
+                    renderLists();
+                }
+            }
+
+            // Carregar tarefas do Local Storage ao iniciar
+            document.addEventListener('DOMContentLoaded', loadFromLocalStorage);
+        </script>
+
+    </body>
+
+</html>

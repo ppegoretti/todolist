@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Todo List - Dark Theme</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+    <div class="todo-container">
+        <div class="header-container">
+            <h1>Lista de Atividades</h1>
+            <div class="header-buttons">
+                <button class="add-button" onclick="openModal()">+ Nova Tarefa</button>
+                <button class="export-button" onclick="exportTodos()">📤</button>
+                <button class="import-button" onclick="document.getElementById('fileInput').click()">📥</button>
+                <input type="file" id="fileInput" accept=".json" onchange="importTodos(event)">
+            </div>
+        </div>
+
+        <div class="sort-controls">
+            <span class="sort-label">Ordenar por:</span>
+            <select class="sort-select" id="sortBy" onchange="updateSort()">
+                <option value="none">Sem ordenação</option>
+                <option value="deadline">Prazo</option>
+                <option value="responsible">Responsável</option>
+                <option value="title">Título</option>
+            </select>
+            <button class="sort-direction" id="sortDirection" onclick="toggleSortDirection()">
+                ↓
+            </button>
+        </div>
+
+        <div class="search-filters">
+            <div class="search-box">
+                <input type="text" id="searchInput" placeholder="Buscar tarefas..." class="search-input">
+            </div>
+            <div class="filter-options">
+                <select id="filterResponsible" class="filter-select">
+                    <option value="">Todos Responsáveis</option>
+                </select>
+                <select id="filterStatus" class="filter-select">
+                    <option value="">Todos Status</option>
+                    <option value="overdue">Atrasadas</option>
+                    <option value="dueToday">Vence Hoje</option>
+                    <option value="dueWeek">Vence Esta Semana</option>
+                </select>
+            </div>
+        </div>
+
+
+        <!-- Modal -->
+        <div id="todoModal" class="modal">
+            <div class="modal-content">
+                <button class="close-button" onclick="closeModal()">&times;</button>
+                <h2 class="modal-title">Nova Tarefa</h2>
+                <div class="form-group">
+                    <label for="newTodo">Título da Tarefa</label>
+                    <input type="text" id="newTodo" placeholder="Digite o título da tarefa">
+                </div>
+                <div class="form-group">
+                    <label for="responsible">Responsável</label>
+                    <input type="text" id="responsible" placeholder="Nome do responsável">
+                </div>
+                <div class="form-group">
+                    <label for="deadline">Prazo</label>
+                    <input type="date" id="deadline">
+                </div>
+                <input type="hidden" id="editingTaskId" value="">
+                <input type="hidden" id="editingTaskStatus" value="">
+                <div class="form-group">
+                    <label for="subtasks">Subtarefas</label>
+                    <div id="subtasksList" class="subtasks-container">
+                        <ul class="subtask-list"></ul>
+                        <button type="button" class="add-subtask-button" onclick="addSubtaskInput()">+ Adicionar
+                            Subtarefa</button>
+                    </div>
+                </div>
+                <div class="modal-buttons">
+                    <button class="modal-button modal-cancel" onclick="closeModal()">Cancelar</button>
+                    <button class="modal-button modal-save" onclick="saveTask()">Salvar</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="lists-container">
+            <div class="list" data-status="todo">
+                <div class="list-header">
+                    <h2>
+                        A Fazer
+                        <span class="task-count">0</span>
+                    </h2>
+                </div>
+                <ul id="todoList"></ul>
+            </div>
+
+            <div class="list" data-status="doing">
+                <div class="list-header">
+                    <h2>
+                        Fazendo
+                        <span class="task-count">0</span>
+                    </h2>
+                </div>
+                <ul id="doingList"></ul>
+            </div>
+
+            <div class="list" data-status="done">
+                <div class="list-header" onclick="toggleDoneList()">
+                    <h2>
+                        Concluído
+                        <span class="task-count">0</span>
+                    </h2>
+                    <span class="accordion-icon">▼</span>
+                </div>
+                <ul id="doneList" class="expanded"></ul>
+            </div>
+        </div>
+
+    </div>
+
+    <script src="script.js"></script>
+</body>
+
+</html>

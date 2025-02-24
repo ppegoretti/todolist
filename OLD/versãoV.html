@@ -1,0 +1,1630 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Todo List - Dark Theme</title>
+    <style>
+        body {
+            background-color: #1a1a1a;
+            color: #e0e0e0;
+            margin: 0;
+            font-family: Arial, sans-serif;
+        }
+
+        .todo-container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .lists-container {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .header-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .header-container h1 {
+            margin: 0;
+        }
+
+        .header-buttons {
+            display: flex;
+            gap: 10px;
+        }
+
+        .todo-item {
+            display: flex;
+            flex-direction: column;
+            padding: 15px;
+            margin: 10px 0;
+            background-color: #3d3d3d;
+            border-radius: 6px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+            cursor: move;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+            gap: 10px;
+        }
+
+        .todo-item-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            width: 100%;
+        }
+
+        .todo-item:hover {
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+            transform: translateY(-2px);
+            background-color: #454545;
+        }
+
+        .todo-item.dragging {
+            opacity: 0.5;
+            transform: scale(0.95);
+        }
+
+        .todo-item.overdue {
+            background-color: #524c23;
+            border-left: 4px solid #ffd700;
+        }
+
+        .todo-item-content {
+            flex: 1;
+            display: flex;
+            gap: 20px;
+            align-items: center;
+        }
+
+        .todo-item-title {
+            font-weight: bold;
+            font-size: 1.1em;
+        }
+
+        .todo-item-warning {
+            color: #ffd700;
+            font-weight: bold;
+            text-align: right;
+        }
+
+        .todo-item-details {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            width: 100%;
+        }
+
+        .todo-item-info {
+            display: flex;
+            gap: 20px;
+            color: #b0b0b0;
+        }
+
+
+        .todo-item-actions {
+            display: flex;
+            gap: 8px;
+        }
+
+        .list {
+            background-color: #2d2d2d;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+            width: 100%;
+        }
+
+        .list.dragover {
+            background-color: #353535;
+            border: 2px dashed #666;
+        }
+
+        .list h2 {
+            margin-top: 0;
+            color: #e0e0e0;
+            font-size: 1.2em;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #3d3d3d;
+        }
+
+        .list-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            cursor: pointer;
+            padding-right: 10px;
+        }
+
+        .list-header h2 {
+            margin: 0;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .list-content {
+            transition: all 0.3s ease;
+        }
+
+        .list-content.collapsed {
+            max-height: 0;
+            opacity: 0;
+            margin: 0;
+            padding: 0;
+            visibility: hidden;
+        }
+
+        .list-content.expanded {
+            max-height: 2000px;
+            opacity: 1;
+            visibility: visible;
+        }
+
+        #doneList {
+            overflow: hidden;
+            transition: all 0.3s ease-out;
+        }
+
+        #doneList.collapsed {
+            max-height: 0;
+            opacity: 0;
+            margin: 0;
+            padding: 0;
+            visibility: hidden;
+        }
+
+        #doneList.expanded {
+            max-height: 2000px;
+            opacity: 1;
+            visibility: visible;
+        }
+
+        ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+            min-height: 50px;
+        }
+
+        .add-todo {
+            background-color: #2d2d2d;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+        }
+
+        .add-todo .form-group {
+            margin-bottom: 15px;
+        }
+
+        .add-todo label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+            color: #e0e0e0;
+        }
+
+        .add-todo input {
+            padding: 10px;
+            margin-right: 10px;
+            width: 100%;
+            box-sizing: border-box;
+            background-color: #3d3d3d;
+            border: 1px solid #4d4d4d;
+            color: #e0e0e0;
+            border-radius: 4px;
+        }
+
+        .add-todo input:focus {
+            outline: none;
+            border-color: #666;
+            background-color: #454545;
+        }
+
+        .add-todo button,
+        .add-button {
+            padding: 12px 24px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            cursor: pointer;
+            border-radius: 4px;
+            font-weight: bold;
+            font-size: 1.1em;
+        }
+
+        .add-button {
+            margin-left: 20px;
+        }
+
+        .add-todo button:hover,
+        .add-button:hover {
+            background-color: #45a049;
+        }
+
+        .edit-btn {
+            background-color: #4a9eff;
+            color: white;
+            border: none;
+            padding: 6px 12px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.9em;
+            margin-right: 8px;
+        }
+
+        .edit-btn:hover {
+            background-color: #3d84d4;
+        }
+
+        .delete-btn {
+            background-color: #ff4444;
+            color: white;
+            border: none;
+            padding: 6px 12px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.9em;
+        }
+
+        .delete-btn:hover {
+            background-color: #cc0000;
+        }
+
+        .export-button,
+        .import-button {
+            padding: 12px 24px;
+            color: white;
+            border: none;
+            cursor: pointer;
+            border-radius: 4px;
+            font-weight: bold;
+            font-size: 1.1em;
+        }
+
+        .export-button {
+            background-color: #4a9eff;
+        }
+
+        .export-button:hover {
+            background-color: #3d84d4;
+        }
+
+        .import-button {
+            background-color: #ff9f4a;
+        }
+
+        .import-button:hover {
+            background-color: #e88f42;
+        }
+
+        #fileInput {
+            display: none;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+            backdrop-filter: blur(5px);
+        }
+
+        .modal-content {
+            position: relative;
+            background-color: #2d2d2d;
+            margin: 10% auto;
+            padding: 20px;
+            border-radius: 8px;
+            width: 90%;
+            max-width: 500px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+            animation: modalSlide 0.3s ease-out;
+        }
+
+        .modal .form-group {
+            margin-bottom: 15px;
+        }
+
+        .modal label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+            color: #e0e0e0;
+        }
+
+        .modal input {
+            padding: 10px;
+            width: 100%;
+            box-sizing: border-box;
+            background-color: #3d3d3d;
+            border: 1px solid #4d4d4d;
+            color: #e0e0e0;
+            border-radius: 4px;
+        }
+
+        .modal input:focus {
+            outline: none;
+            border-color: #666;
+            background-color: #454545;
+        }
+
+        .modal-buttons {
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        .modal-button {
+            padding: 10px 20px;
+            border: none;
+            cursor: pointer;
+            border-radius: 4px;
+            font-weight: bold;
+        }
+
+        .modal-save {
+            background-color: #4CAF50;
+            color: white;
+        }
+
+        .modal-save:hover {
+            background-color: #45a049;
+        }
+
+        .modal-cancel {
+            background-color: #666;
+            color: white;
+        }
+
+        .modal-cancel:hover {
+            background-color: #555;
+        }
+
+        .modal-title {
+            margin-top: 0;
+            margin-bottom: 20px;
+        }
+
+        .close-button {
+            position: absolute;
+            right: 10px;
+            top: 10px;
+            background: none;
+            border: none;
+            color: #e0e0e0;
+            font-size: 1.5em;
+            cursor: pointer;
+            padding: 5px;
+            line-height: 1;
+        }
+
+        .close-button:hover {
+            color: #fff;
+        }
+
+        .sort-controls {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            align-items: center;
+        }
+
+        .sort-label {
+            color: #e0e0e0;
+            font-weight: bold;
+        }
+
+        .sort-select {
+            padding: 8px 12px;
+            background-color: #3d3d3d;
+            border: 1px solid #4d4d4d;
+            color: #e0e0e0;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        .sort-select:focus {
+            outline: none;
+            border-color: #666;
+            background-color: #454545;
+        }
+
+        .sort-direction {
+            background: none;
+            border: none;
+            color: #e0e0e0;
+            cursor: pointer;
+            font-size: 1.2em;
+            padding: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 4px;
+            background-color: #3d3d3d;
+        }
+
+        .sort-direction:hover {
+            background-color: #454545;
+        }
+
+        .task-count {
+            background-color: #4CAF50;
+            color: white;
+            padding: 2px 8px;
+            border-radius: 12px;
+            font-size: 0.8em;
+            min-width: 20px;
+            text-align: center;
+        }
+
+        .deadline-warning {
+            color: #ffd700;
+            font-weight: bold;
+        }
+
+        .completion-date {
+            color: #4CAF50;
+        }
+
+        .accordion-icon {
+            transition: transform 0.3s ease;
+            font-size: 1.2em;
+            color: #e0e0e0;
+        }
+
+        .accordion-icon.collapsed {
+            transform: rotate(-90deg);
+        }
+
+        @keyframes modalSlide {
+            from {
+                transform: translateY(-30px);
+                opacity: 0;
+            }
+
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .todo-item {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .todo-item-content {
+                flex-direction: column;
+                gap: 10px;
+                width: 100%;
+            }
+
+            .todo-item-row,
+            .todo-item-details,
+            .todo-item-info {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 8px;
+            }
+
+            .todo-item-warning {
+                text-align: left;
+            }
+
+            .todo-item-actions {
+                width: 100%;
+                justify-content: flex-start;
+                margin-top: 8px;
+            }
+
+            .todo-item-actions {
+                width: 100%;
+                justify-content: flex-end;
+                margin-top: 10px;
+            }
+
+            .header-container {
+                flex-direction: column;
+                align-items: stretch;
+                gap: 15px;
+            }
+
+            .header-buttons {
+                flex-direction: column;
+                width: 100%;
+            }
+
+            .export-button,
+            .import-button,
+            .add-button {
+                width: 100%;
+                margin-left: 0;
+            }
+
+            .sort-controls {
+                flex-wrap: wrap;
+            }
+
+            .sort-select {
+                flex-grow: 1;
+                min-width: 150px;
+            }
+        }
+
+        .search-filters {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+
+        .search-box {
+            flex: 1;
+            min-width: 200px;
+        }
+
+        .search-input {
+            width: 100%;
+            padding: 10px;
+            background-color: #3d3d3d;
+            border: 1px solid #4d4d4d;
+            color: #e0e0e0;
+            border-radius: 4px;
+        }
+
+        .search-input:focus {
+            outline: none;
+            border-color: #666;
+            background-color: #454545;
+        }
+
+        .filter-options {
+            display: flex;
+            gap: 10px;
+        }
+
+        .filter-select {
+            padding: 10px;
+            background-color: #3d3d3d;
+            border: 1px solid #4d4d4d;
+            color: #e0e0e0;
+            border-radius: 4px;
+            min-width: 150px;
+        }
+
+        .filter-select:focus {
+            outline: none;
+            border-color: #666;
+            background-color: #454545;
+        }
+
+        @media (max-width: 768px) {
+            .filter-options {
+                flex-direction: column;
+                width: 100%;
+            }
+
+            .filter-select {
+                width: 100%;
+            }
+        }
+
+        .subtasks-container {
+            margin-top: 10px;
+            padding: 10px;
+            background-color: #333;
+            border-radius: 4px;
+        }
+
+        .subtasks-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 8px;
+            padding-bottom: 8px;
+            border-bottom: 1px solid #444;
+        }
+
+        .subtasks-title {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: #e0e0e0;
+            font-weight: bold;
+        }
+
+        .subtasks-count {
+            background-color: #4CAF50;
+            color: white;
+            padding: 2px 8px;
+            border-radius: 12px;
+            font-size: 0.8em;
+        }
+
+        .toggle-subtasks {
+            background: none;
+            border: none;
+            color: #e0e0e0;
+            cursor: pointer;
+            padding: 4px;
+            font-size: 1.2em;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: transform 0.3s ease;
+        }
+
+        .toggle-subtasks:hover {
+            color: #fff;
+        }
+
+        .toggle-subtasks.collapsed {
+            transform: rotate(-90deg);
+        }
+
+        .subtask-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+            transition: all 0.3s ease;
+        }
+
+        .subtask-list.hidden {
+            display: none;
+        }
+
+        .subtask-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 5px 0;
+            border-bottom: 1px solid #444;
+        }
+
+        .subtask-item:last-child {
+            border-bottom: none;
+        }
+
+        .subtask-checkbox {
+            width: 16px;
+            height: 16px;
+            background-color: #3d3d3d;
+            border: 1px solid #4d4d4d;
+            border-radius: 3px;
+            cursor: pointer;
+        }
+
+        .subtask-checkbox:checked {
+            background-color: #4CAF50;
+        }
+
+        .subtask-text {
+            flex: 1;
+            color: #e0e0e0;
+        }
+
+        .subtask-text.completed {
+            text-decoration: line-through;
+            color: #888;
+        }
+
+        .add-subtask-button {
+            background-color: #444;
+            color: #e0e0e0;
+            border: none;
+            padding: 5px 10px;
+            border-radius: 4px;
+            cursor: pointer;
+            margin-top: 5px;
+            font-size: 0.9em;
+        }
+
+        .add-subtask-button:hover {
+            background-color: #555;
+        }
+
+        .subtask-delete {
+            background: none;
+            border: none;
+            color: #ff4444;
+            cursor: pointer;
+            padding: 2px 5px;
+            font-size: 1.1em;
+        }
+
+        .subtask-delete:hover {
+            color: #cc0000;
+        }
+
+        .subtasks-container {
+            margin-top: 10px;
+            border-radius: 4px;
+            transition: all 0.3s ease;
+        }
+
+        .subtasks-container.collapsed {
+            background-color: transparent;
+            padding: 0;
+            margin-top: 5px;
+        }
+
+        .subtasks-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 8px;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.2s ease;
+        }
+
+        .subtasks-container.collapsed .subtasks-header {
+            background-color: #333;
+            padding: 5px 10px;
+            display: inline-flex;
+            margin-left: 10px;
+        }
+
+        .subtasks-container.collapsed .subtasks-header:hover {
+            background-color: #404040;
+        }
+
+        .subtasks-title {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: #e0e0e0;
+            font-size: 0.9em;
+        }
+
+        .subtasks-count {
+            background-color: #4CAF50;
+            color: white;
+            padding: 2px 8px;
+            border-radius: 12px;
+            font-size: 0.9em;
+        }
+
+        .toggle-subtasks {
+            background: none;
+            border: none;
+            color: #e0e0e0;
+            cursor: pointer;
+            padding: 4px;
+            font-size: 1em;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: transform 0.3s ease;
+        }
+
+        .toggle-subtasks.collapsed {
+            transform: rotate(-90deg);
+        }
+
+        .subtask-list {
+            list-style: none;
+            padding: 8px;
+            margin: 0;
+            background-color: #333;
+            border-radius: 4px;
+            transition: all 0.3s ease;
+        }
+
+        .subtask-list.hidden {
+            display: none;
+        }
+
+        .subtasks-container.collapsed .subtask-list {
+            display: none;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="todo-container">
+        <div class="header-container">
+            <h1>Lista de Atividades</h1>
+            <div class="header-buttons">
+                <button class="add-button" onclick="openModal()">+ Nova Tarefa</button>
+                <button class="export-button" onclick="exportTodos()">📤</button>
+                <button class="import-button" onclick="document.getElementById('fileInput').click()">📥</button>
+                <input type="file" id="fileInput" accept=".json" onchange="importTodos(event)">
+            </div>
+        </div>
+
+        <div class="sort-controls">
+            <span class="sort-label">Ordenar por:</span>
+            <select class="sort-select" id="sortBy" onchange="updateSort()">
+                <option value="none">Sem ordenação</option>
+                <option value="deadline">Prazo</option>
+                <option value="responsible">Responsável</option>
+                <option value="title">Título</option>
+            </select>
+            <button class="sort-direction" id="sortDirection" onclick="toggleSortDirection()">
+                ↓
+            </button>
+        </div>
+
+        <div class="search-filters">
+            <div class="search-box">
+                <input type="text" id="searchInput" placeholder="Buscar tarefas..." class="search-input">
+            </div>
+            <div class="filter-options">
+                <select id="filterResponsible" class="filter-select">
+                    <option value="">Todos Responsáveis</option>
+                </select>
+                <select id="filterStatus" class="filter-select">
+                    <option value="">Todos Status</option>
+                    <option value="overdue">Atrasadas</option>
+                    <option value="dueToday">Vence Hoje</option>
+                    <option value="dueWeek">Vence Esta Semana</option>
+                </select>
+            </div>
+        </div>
+
+
+        <!-- Modal -->
+        <div id="todoModal" class="modal">
+            <div class="modal-content">
+                <button class="close-button" onclick="closeModal()">&times;</button>
+                <h2 class="modal-title">Nova Tarefa</h2>
+                <div class="form-group">
+                    <label for="newTodo">Título da Tarefa</label>
+                    <input type="text" id="newTodo" placeholder="Digite o título da tarefa">
+                </div>
+                <div class="form-group">
+                    <label for="responsible">Responsável</label>
+                    <input type="text" id="responsible" placeholder="Nome do responsável">
+                </div>
+                <div class="form-group">
+                    <label for="deadline">Prazo</label>
+                    <input type="date" id="deadline">
+                </div>
+                <input type="hidden" id="editingTaskId" value="">
+                <input type="hidden" id="editingTaskStatus" value="">
+                <div class="form-group">
+                    <label for="subtasks">Subtarefas</label>
+                    <div id="subtasksList" class="subtasks-container">
+                        <ul class="subtask-list"></ul>
+                        <button type="button" class="add-subtask-button" onclick="addSubtaskInput()">+ Adicionar
+                            Subtarefa</button>
+                    </div>
+                </div>
+                <div class="modal-buttons">
+                    <button class="modal-button modal-cancel" onclick="closeModal()">Cancelar</button>
+                    <button class="modal-button modal-save" onclick="saveTask()">Salvar</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="lists-container">
+            <div class="list" data-status="todo">
+                <div class="list-header">
+                    <h2>
+                        A Fazer
+                        <span class="task-count">0</span>
+                    </h2>
+                </div>
+                <ul id="todoList"></ul>
+            </div>
+
+            <div class="list" data-status="doing">
+                <div class="list-header">
+                    <h2>
+                        Fazendo
+                        <span class="task-count">0</span>
+                    </h2>
+                </div>
+                <ul id="doingList"></ul>
+            </div>
+
+            <div class="list" data-status="done">
+                <div class="list-header" onclick="toggleDoneList()">
+                    <h2>
+                        Concluído
+                        <span class="task-count">0</span>
+                    </h2>
+                    <span class="accordion-icon">▼</span>
+                </div>
+                <ul id="doneList" class="expanded"></ul>
+            </div>
+        </div>
+
+    </div>
+
+    <body>
+
+        <script>
+            let todos = {
+                todo: [],
+                doing: [],
+                done: []
+            };
+
+            let isEditing = false;
+
+            let searchTerm = '';
+            let filterResponsible = '';
+            let filterStatus = '';
+
+            function formatDate(date) {
+                const d = new Date(date);
+                d.setMinutes(d.getMinutes() + d.getTimezoneOffset());
+                return d.toLocaleDateString('pt-BR');
+            }
+
+            function formatDateTime(date) {
+                return new Date(date).toLocaleString('pt-BR');
+            }
+
+            function isOverdue(deadline) {
+                const today = new Date();
+                today.setHours(0, 0, 0, 0);
+                const deadlineDate = new Date(deadline);
+                return deadlineDate < today;
+            }
+
+            function openModal(taskId, status) {
+                const modal = document.getElementById('todoModal');
+                const modalTitle = modal.querySelector('.modal-title');
+                const subtasksList = document.querySelector('#subtasksList .subtask-list');
+                subtasksList.innerHTML = ''; // Limpar subtarefas anteriores
+
+                if (taskId) {
+                    isEditing = true;
+                    const task = todos[status].find(t => t.id === taskId);
+                    if (task) {
+                        document.getElementById('newTodo').value = task.title;
+                        document.getElementById('responsible').value = task.responsible;
+                        document.getElementById('deadline').value = task.deadline.split('T')[0];
+                        document.getElementById('editingTaskId').value = taskId;
+                        document.getElementById('editingTaskStatus').value = status;
+                        modalTitle.textContent = 'Editar Tarefa';
+
+                        // Carregar subtarefas existentes
+                        if (task.subtasks) {
+                            task.subtasks.forEach(subtask => {
+                                const li = document.createElement('li');
+                                li.className = 'subtask-item';
+                                li.innerHTML = `
+                        <input type="text" class="search-input" style="flex: 1;" value="${subtask.text}">
+                        <button class="subtask-delete" onclick="this.parentElement.remove()">×</button>
+                    `;
+                                subtasksList.appendChild(li);
+                            });
+                        }
+                    }
+                } else {
+                    isEditing = false;
+                    document.getElementById('newTodo').value = '';
+                    document.getElementById('responsible').value = '';
+                    document.getElementById('deadline').value = '';
+                    document.getElementById('editingTaskId').value = '';
+                    document.getElementById('editingTaskStatus').value = '';
+                    modalTitle.textContent = 'Nova Tarefa';
+                }
+
+                modal.style.display = 'block';
+                document.getElementById('newTodo').focus();
+            }
+
+            function closeModal() {
+                document.getElementById('todoModal').style.display = 'none';
+                isEditing = false;
+            }
+
+            function saveTask() {
+                const title = document.getElementById('newTodo').value.trim();
+                const responsible = document.getElementById('responsible').value.trim();
+                const deadline = document.getElementById('deadline').value;
+                const editingTaskId = document.getElementById('editingTaskId').value;
+                const editingTaskStatus = document.getElementById('editingTaskStatus').value;
+
+                if (title && responsible && deadline) {
+                    if (isEditing && editingTaskId) {
+                        // Atualizar tarefa existente
+                        const taskIndex = todos[editingTaskStatus].findIndex(t => t.id === parseInt(editingTaskId));
+                        if (taskIndex !== -1) {
+                            todos[editingTaskStatus][taskIndex] = {
+                                ...todos[editingTaskStatus][taskIndex],
+                                title,
+                                responsible,
+                                deadline,
+                            };
+                        }
+                    } else {
+                        // Criar nova tarefa
+                        const todo = {
+                            id: Date.now(),
+                            title,
+                            responsible,
+                            deadline,
+                            createdAt: new Date().toISOString(),
+                            completedAt: null
+                        };
+                        todos.todo.push(todo);
+                    }
+
+                    saveToLocalStorage();
+                    closeModal();
+                    renderLists();
+                } else {
+                    alert('Por favor, preencha todos os campos!');
+                }
+            }
+
+            function deleteTask(id, status) {
+                if (confirm('Tem certeza que deseja excluir esta tarefa?')) {
+                    todos[status] = todos[status].filter(todo => todo.id !== id);
+                    saveToLocalStorage();
+                    renderLists();
+                }
+            }
+
+            let isDoneListCollapsed = false;
+
+            function toggleDoneList() {
+                const doneList = document.getElementById('doneList');
+                const accordionIcon = document.querySelector('.accordion-icon');
+                const taskCount = document.querySelector('.task-count');
+
+                isDoneListCollapsed = !isDoneListCollapsed;
+
+                if (isDoneListCollapsed) {
+                    doneList.classList.remove('expanded');
+                    doneList.classList.add('collapsed');
+                    accordionIcon.classList.add('collapsed');
+                } else {
+                    doneList.classList.remove('collapsed');
+                    doneList.classList.add('expanded');
+                    accordionIcon.classList.remove('collapsed');
+                }
+            }
+
+            let currentSortBy = 'none';
+            let isAscending = true;
+
+            function updateSort() {
+                currentSortBy = document.getElementById('sortBy').value;
+                sortTodos();
+                renderLists();
+            }
+
+            function toggleSortDirection() {
+                isAscending = !isAscending;
+                document.getElementById('sortDirection').textContent = isAscending ? '↓' : '↑';
+                if (currentSortBy !== 'none') {
+                    sortTodos();
+                    renderLists();
+                }
+            }
+
+            function sortTodos() {
+                if (currentSortBy === 'none') return;
+
+                const sortFunction = (a, b) => {
+                    let comparison = 0;
+
+                    switch (currentSortBy) {
+                        case 'deadline':
+                            comparison = new Date(a.deadline) - new Date(b.deadline);
+                            break;
+                        case 'responsible':
+                            comparison = a.responsible.localeCompare(b.responsible);
+                            break;
+                        case 'title':
+                            comparison = a.title.localeCompare(b.title);
+                            break;
+                    }
+
+                    return isAscending ? comparison : -comparison;
+                };
+
+                // Sort each list separately
+                todos.todo.sort(sortFunction);
+                todos.doing.sort(sortFunction);
+                todos.done.sort(sortFunction);
+            }
+
+
+            function renderLists() {
+                if (currentSortBy !== 'none') {
+                    sortTodos();
+                }
+
+                ['todo', 'doing', 'done'].forEach(status => {
+                    const list = document.getElementById(`${status}List`);
+                    list.innerHTML = '';
+
+                    const filteredTodos = filterTasks(todos[status]);
+                    const taskCount = list.closest('.list').querySelector('.task-count');
+                    taskCount.textContent = filteredTodos.length;
+
+                    filteredTodos.forEach(todo => {
+                        const li = document.createElement('li');
+                        const isTaskOverdue = isOverdue(todo.deadline) && status !== 'done';
+
+                        li.className = `todo-item ${isTaskOverdue ? 'overdue' : ''}`;
+                        li.draggable = true;
+                        li.dataset.id = todo.id;
+                        li.dataset.status = status;
+
+                        li.innerHTML = `
+                <div class="todo-item-row">
+                    <span class="todo-item-title">${todo.title}</span>
+                    ${isTaskOverdue ? `<div class="todo-item-warning">⚠️ Atividade atrasada!</div>` : ''}
+                    ${todo.completedAt ? `<div class="completion-date">✓ Concluído em: ${formatDateTime(todo.completedAt)}</div>` : ''}
+                </div>
+                <div class="todo-item-details">
+                    <div class="todo-item-info">
+                        <div>Responsável: ${todo.responsible}</div>
+                        <div>Prazo: ${formatDate(todo.deadline)}</div>
+                    </div>
+                    <div class="todo-item-actions">
+                        <button class="edit-btn" onclick="openModal(${todo.id}, '${status}')">Editar</button>
+                        <button class="delete-btn" onclick="deleteTask(${todo.id}, '${status}')">Excluir</button>
+                    </div>
+                </div>
+                ${renderSubtasks(todo.subtasks, todo.id, status)}
+            `;
+
+                        // Aplicar estado de collapse após renderização
+                        if (todo.subtasks && todo.subtasks.length > 0 && collapsedSubtasks.has(todo.id)) {
+                            const subtaskList = li.querySelector(`.subtask-list[data-task-id="${todo.id}"]`);
+                            const toggleButton = subtaskList.previousElementSibling.querySelector('.toggle-subtasks');
+                            subtaskList.classList.add('hidden');
+                            toggleButton.classList.add('collapsed');
+                        }
+
+                        li.addEventListener('dragstart', handleDragStart);
+                        li.addEventListener('dragend', handleDragEnd);
+
+                        list.appendChild(li);
+                    });
+                });
+            }
+
+            function handleDragStart(e) {
+                e.target.classList.add('dragging');
+                e.dataTransfer.setData('text/plain', JSON.stringify({
+                    id: parseInt(e.target.dataset.id),
+                    status: e.target.dataset.status
+                }));
+            }
+
+            function handleDragEnd(e) {
+                e.target.classList.remove('dragging');
+                document.querySelectorAll('.list').forEach(list => {
+                    list.classList.remove('dragover');
+                });
+            }
+
+            function handleDragOver(e) {
+                e.preventDefault();
+                const list = e.target.closest('.list');
+                if (list) {
+                    list.classList.add('dragover');
+                }
+            }
+
+            function handleDragLeave(e) {
+                const list = e.target.closest('.list');
+                if (list) {
+                    list.classList.remove('dragover');
+                }
+            }
+
+            function moveTask(id, fromStatus, toStatus) {
+                const taskIndex = todos[fromStatus].findIndex(todo => todo.id === id);
+                if (taskIndex !== -1) {
+                    const task = todos[fromStatus].splice(taskIndex, 1)[0];
+
+                    if (toStatus === 'done' && !task.completedAt) {
+                        task.completedAt = new Date().toISOString();
+                    }
+                    if (toStatus !== 'done') {
+                        task.completedAt = null;
+                    }
+
+                    todos[toStatus].push(task);
+                    saveToLocalStorage();
+                    renderLists();
+                }
+            }
+
+            function handleDrop(e) {
+                e.preventDefault();
+
+                const list = e.target.closest('.list');
+                if (!list) return;
+
+                list.classList.remove('dragover');
+
+                try {
+                    const data = JSON.parse(e.dataTransfer.getData('text/plain'));
+                    const newStatus = list.dataset.status;
+
+                    if (data.status !== newStatus) {
+                        moveTask(data.id, data.status, newStatus);
+                    }
+                } catch (error) {
+                    console.error('Erro ao mover a tarefa:', error);
+                }
+            }
+
+            function initializeDragAndDrop() {
+                document.querySelectorAll('.list').forEach(list => {
+                    list.addEventListener('dragover', handleDragOver);
+                    list.addEventListener('dragleave', handleDragLeave);
+                    list.addEventListener('drop', handleDrop);
+                });
+            }
+
+            document.querySelectorAll('.list').forEach(list => {
+                list.addEventListener('dragover', handleDragOver);
+                list.addEventListener('dragleave', handleDragLeave);
+                list.addEventListener('drop', handleDrop);
+            });
+
+            document.addEventListener('DOMContentLoaded', () => {
+                loadFromLocalStorage();
+                initializeDragAndDrop();
+
+                // Atualizar os contadores iniciais para todas as listas
+                ['todo', 'doing', 'done'].forEach(status => {
+                    const taskCount = document.querySelector(`.list[data-status="${status}"] .task-count`);
+                    taskCount.textContent = todos[status].length;
+                });
+            });
+            document.addEventListener('keypress', function (e) {
+                if (e.key === 'Enter') {
+                    const activeElement = document.activeElement;
+                    if (['newTodo', 'responsible', 'deadline'].includes(activeElement.id)) {
+                        addTodo();
+                    }
+                }
+            });
+
+            document.addEventListener('keydown', function (e) {
+                if (e.key === 'Escape' && document.getElementById('todoModal').style.display === 'block') {
+                    closeModal();
+                }
+            });
+
+            function saveToLocalStorage() {
+                localStorage.setItem('todos', JSON.stringify(todos));
+            }
+
+            function loadFromLocalStorage() {
+                const storedTodos = localStorage.getItem('todos');
+                const storedCollapsedSubtasks = localStorage.getItem('collapsedSubtasks');
+
+                if (storedTodos) {
+                    todos = JSON.parse(storedTodos);
+                    document.getElementById('sortBy').value = currentSortBy;
+                    document.getElementById('sortDirection').textContent = isAscending ? '↓' : '↑';
+                    updateResponsibleFilter();
+                }
+
+                if (storedCollapsedSubtasks) {
+                    collapsedSubtasks = new Set(JSON.parse(storedCollapsedSubtasks));
+                }
+
+                renderLists();
+            }
+
+            function exportTodos() {
+                const todosJSON = JSON.stringify(todos, null, 2);
+                const blob = new Blob([todosJSON], { type: 'application/json' });
+                const url = URL.createObjectURL(blob);
+
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `todos-${new Date().toISOString().split('T')[0]}.json`;
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                URL.revokeObjectURL(url);
+            }
+
+            function importTodos(event) {
+                const file = event.target.files[0];
+                if (!file) return;
+
+                const reader = new FileReader();
+                reader.onload = function (e) {
+                    try {
+                        const importedTodos = JSON.parse(e.target.result);
+                        if (validateTodosStructure(importedTodos)) {
+                            todos = importedTodos;
+                            saveToLocalStorage();
+                            renderLists();
+                            alert('Dados importados com sucesso!');
+                        } else {
+                            alert('Arquivo inválido. Por favor, selecione um arquivo de exportação válido.');
+                        }
+                    } catch (error) {
+                        alert('Erro ao importar arquivo. Verifique se o arquivo está no formato correto.');
+                        console.error('Erro na importação:', error);
+                    }
+                };
+                reader.readAsText(file);
+                event.target.value = ''; // Reset file input
+            }
+
+            function validateTodosStructure(data) {
+                // Validate basic structure
+                if (!data || typeof data !== 'object') return false;
+                if (!('todo' in data && 'doing' in data && 'done' in data)) return false;
+                if (!Array.isArray(data.todo) || !Array.isArray(data.doing) || !Array.isArray(data.done)) return false;
+
+                // Validate each task in each array
+                const validateTask = task => {
+                    return (
+                        task.hasOwnProperty('id') &&
+                        task.hasOwnProperty('title') &&
+                        task.hasOwnProperty('responsible') &&
+                        task.hasOwnProperty('deadline') &&
+                        task.hasOwnProperty('createdAt')
+                    );
+                };
+
+                return (
+                    data.todo.every(validateTask) &&
+                    data.doing.every(validateTask) &&
+                    data.done.every(validateTask)
+                );
+            }
+
+            function updateResponsibleFilter() {
+                const responsibleSelect = document.getElementById('filterResponsible');
+                const responsibles = new Set();
+
+                // Coletar todos os responsáveis
+                Object.values(todos).forEach(list => {
+                    list.forEach(todo => {
+                        responsibles.add(todo.responsible);
+                    });
+                });
+
+                // Limpar e reconstruir o select
+                responsibleSelect.innerHTML = '<option value="">Todos Responsáveis</option>';
+                [...responsibles].sort().forEach(responsible => {
+                    const option = document.createElement('option');
+                    option.value = responsible;
+                    option.textContent = responsible;
+                    responsibleSelect.appendChild(option);
+                });
+            }
+
+            function checkDueDate(deadline, filter) {
+                const today = new Date();
+                today.setHours(0, 0, 0, 0);
+                const deadlineDate = new Date(deadline);
+                deadlineDate.setHours(0, 0, 0, 0);
+
+                if (filter === 'dueToday') {
+                    return deadlineDate.getTime() === today.getTime();
+                } else if (filter === 'dueWeek') {
+                    const weekFromNow = new Date(today);
+                    weekFromNow.setDate(today.getDate() + 7);
+                    return deadlineDate >= today && deadlineDate <= weekFromNow;
+                }
+                return true;
+            }
+
+            function filterTasks(tasks) {
+                return tasks.filter(todo => {
+                    const matchesSearch = todo.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                        todo.responsible.toLowerCase().includes(searchTerm.toLowerCase());
+                    const matchesResponsible = !filterResponsible || todo.responsible === filterResponsible;
+                    let matchesStatus = true;
+
+                    if (filterStatus === 'overdue') {
+                        matchesStatus = isOverdue(todo.deadline);
+                    } else if (filterStatus === 'dueToday' || filterStatus === 'dueWeek') {
+                        matchesStatus = checkDueDate(todo.deadline, filterStatus);
+                    }
+
+                    return matchesSearch && matchesResponsible && matchesStatus;
+                });
+            }
+
+
+            document.getElementById('searchInput').addEventListener('input', (e) => {
+                searchTerm = e.target.value;
+                renderLists();
+            });
+
+            document.getElementById('filterResponsible').addEventListener('change', (e) => {
+                filterResponsible = e.target.value;
+                renderLists();
+            });
+
+            document.getElementById('filterStatus').addEventListener('change', (e) => {
+                filterStatus = e.target.value;
+                renderLists();
+            });
+
+            // Função para renderizar subtarefas
+            function renderSubtasks(subtasks, taskId, status) {
+                if (!subtasks || subtasks.length === 0) {
+                    return '';
+                }
+
+                const isCollapsed = collapsedSubtasks.has(taskId);
+                const containerClass = isCollapsed ? 'subtasks-container collapsed' : 'subtasks-container';
+                const toggleClass = isCollapsed ? 'toggle-subtasks collapsed' : 'toggle-subtasks';
+
+                return `
+            <div class="${containerClass}">
+                <div class="subtasks-header" onclick="toggleSubtaskVisibility(${taskId}, '${status}')">
+                    <div class="subtasks-title">
+                        ${isCollapsed ? 'Subtarefas' : ''}
+                        <span class="subtasks-count">${getSubtaskCount(subtasks)}</span>
+                    </div>
+                    <button class="${toggleClass}">▼</button>
+                </div>
+                <ul class="subtask-list ${isCollapsed ? 'hidden' : ''}" data-task-id="${taskId}">
+                    ${subtasks.map((subtask, index) => `
+                        <li class="subtask-item">
+                            <input 
+                                type="checkbox" 
+                                class="subtask-checkbox" 
+                                ${subtask.completed ? 'checked' : ''} 
+                                onchange="toggleSubtask(${taskId}, '${status}', ${index})"
+                            >
+                            <span class="subtask-text ${subtask.completed ? 'completed' : ''}">${subtask.text}</span>
+                            <button class="subtask-delete" onclick="deleteSubtask(${taskId}, '${status}', ${index})">×</button>
+                        </li>
+                    `).join('')}
+                </ul>
+            </div>`;
+            }
+
+            // Função para adicionar input de subtarefa no modal
+            function addSubtaskInput() {
+                const subtasksList = document.querySelector('#subtasksList .subtask-list');
+                const li = document.createElement('li');
+                li.className = 'subtask-item';
+                li.innerHTML = `
+        <input type="text" class="search-input" style="flex: 1;" placeholder="Digite a subtarefa">
+        <button class="subtask-delete" onclick="this.parentElement.remove()">×</button>
+    `;
+                subtasksList.appendChild(li);
+            }
+
+            // Função para toggle de subtarefa
+            function toggleSubtask(taskId, status, subtaskIndex) {
+                const task = todos[status].find(t => t.id === taskId);
+                if (task && task.subtasks) {
+                    task.subtasks[subtaskIndex].completed = !task.subtasks[subtaskIndex].completed;
+                    saveToLocalStorage();
+                    renderLists();
+                }
+            }
+
+            // Função para deletar subtarefa
+            function deleteSubtask(taskId, status, subtaskIndex) {
+                const task = todos[status].find(t => t.id === taskId);
+                if (task && task.subtasks) {
+                    task.subtasks.splice(subtaskIndex, 1);
+
+                    // Se não houver mais subtarefas, remover o array de subtarefas
+                    if (task.subtasks.length === 0) {
+                        delete task.subtasks;
+                    }
+
+                    saveToLocalStorage();
+                    renderLists();
+                }
+            }
+
+            // Modificar a função saveTask para incluir subtarefas
+            function saveTask() {
+                const title = document.getElementById('newTodo').value.trim();
+                const responsible = document.getElementById('responsible').value.trim();
+                const deadline = document.getElementById('deadline').value;
+                const editingTaskId = document.getElementById('editingTaskId').value;
+                const editingTaskStatus = document.getElementById('editingTaskStatus').value;
+
+                // Coletar subtarefas do modal
+                const subtaskInputs = document.querySelectorAll('#subtasksList .subtask-list input[type="text"]');
+                const subtasks = Array.from(subtaskInputs)
+                    .map(input => input.value.trim())
+                    .filter(text => text !== '')
+                    .map(text => ({
+                        text,
+                        completed: false
+                    }));
+
+                if (title && responsible && deadline) {
+                    if (isEditing && editingTaskId) {
+                        const taskIndex = todos[editingTaskStatus].findIndex(t => t.id === parseInt(editingTaskId));
+                        if (taskIndex !== -1) {
+                            // Manter subtarefas existentes que não foram modificadas
+                            const existingSubtasks = todos[editingTaskStatus][taskIndex].subtasks || [];
+                            todos[editingTaskStatus][taskIndex] = {
+                                ...todos[editingTaskStatus][taskIndex],
+                                title,
+                                responsible,
+                                deadline,
+                                subtasks: [...existingSubtasks, ...subtasks]
+                            };
+                        }
+                    } else {
+                        const todo = {
+                            id: Date.now(),
+                            title,
+                            responsible,
+                            deadline,
+                            createdAt: new Date().toISOString(),
+                            completedAt: null,
+                            subtasks
+                        };
+                        todos.todo.push(todo);
+                    }
+
+                    saveToLocalStorage();
+                    closeModal();
+                    renderLists();
+                } else {
+                    alert('Por favor, preencha todos os campos!');
+                }
+            }
+
+            // Função para contar subtarefas completadas
+            function getSubtaskCount(subtasks) {
+                if (!subtasks) return '0/0';
+                const completed = subtasks.filter(s => s.completed).length;
+                return `${completed}/${subtasks.length}`;
+            }
+
+            // Armazenar estado de visibilidade das subtarefas
+            let collapsedSubtasks = new Set();
+
+            // Função para alternar visibilidade das subtarefas
+            function toggleSubtaskVisibility(taskId, status) {
+                const container = document.querySelector(`.subtask-list[data-task-id="${taskId}"]`).parentElement;
+                const subtaskList = container.querySelector('.subtask-list');
+                const toggleButton = container.querySelector('.toggle-subtasks');
+
+                if (collapsedSubtasks.has(taskId)) {
+                    container.classList.remove('collapsed');
+                    subtaskList.classList.remove('hidden');
+                    toggleButton.classList.remove('collapsed');
+                    collapsedSubtasks.delete(taskId);
+                } else {
+                    container.classList.add('collapsed');
+                    subtaskList.classList.add('hidden');
+                    toggleButton.classList.add('collapsed');
+                    collapsedSubtasks.add(taskId);
+                }
+
+                localStorage.setItem('collapsedSubtasks', JSON.stringify([...collapsedSubtasks]));
+            }
+            // Carregar tarefas do Local Storage ao iniciar
+            document.addEventListener('DOMContentLoaded', loadFromLocalStorage);
+        </script>
+
+    </body>
+
+</html>
