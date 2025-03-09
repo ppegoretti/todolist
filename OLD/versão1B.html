@@ -1117,6 +1117,7 @@
                 modal.style.display = 'block';
                 document.getElementById('newTodo').focus();
             }
+
             function closeModal() {
                 document.getElementById('todoModal').style.display = 'none';
                 isEditing = false;
@@ -1269,7 +1270,7 @@
                                 </div>
                                 <div class="todo-item-actions">
                                     ${hasSubtasks ? `
-                                        <button class="toggle-subtasks-btn ${collapsedSubtasks.has(todo.id) ? 'collapsed' : ''}" 
+                                        <button class="toggle-subtasks-btn ${collapsedSubtasks.has(todo.id) ? 'collapsed' : ''}"
                                                 onclick="event.stopPropagation(); toggleSubtaskVisibility(${todo.id}, '${status}')">
                                             <span class="toggle-icon">▼</span>
                                             Subtarefas
@@ -1587,17 +1588,17 @@
                 ${sortedSubtasks.map((subtask, index) => {
                     const isSubtaskOverdue = subtask.deadline && isOverdue(subtask.deadline);
                     return `
-                        <li class="subtask-item" draggable="true" data-index="${index}" 
-                            ondragstart="handleSubtaskDragStart(event)" 
+                        <li class="subtask-item" draggable="true" data-index="${index}"
+                            ondragstart="handleSubtaskDragStart(event)"
                             ondragend="handleSubtaskDragEnd(event)"
                             ondragover="handleSubtaskDragOver(event)"
                             ondrop="handleSubtaskDrop(event)">
                             <div class="subtask-content">
                                 <span class="subtask-drag-handle">⋮⋮</span>
-                                <input 
-                                    type="checkbox" 
-                                    class="subtask-checkbox" 
-                                    ${subtask.completed ? 'checked' : ''} 
+                                <input
+                                    type="checkbox"
+                                    class="subtask-checkbox"
+                                    ${subtask.completed ? 'checked' : ''}
                                     onchange="toggleSubtask(${taskId}, '${status}', ${index})"
                                 >
                                 <span class="subtask-text ${subtask.completed ? 'completed' : ''}">${subtask.text}</span>

@@ -9,11 +9,6 @@ import {
   FormMessage,
 } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
-
-import { zodResolver } from '@hookform/resolvers/zod'
-import { useForm } from 'react-hook-form'
-import { z } from 'zod'
-
 import {
   Select,
   SelectContent,
@@ -21,6 +16,9 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
+import { zodResolver } from '@hookform/resolvers/zod'
+import { useForm } from 'react-hook-form'
+import { z } from 'zod'
 
 const formSchema = z.object({
   username: z.string().min(2, {
@@ -150,11 +148,11 @@ export function Home() {
           render={() => (
             <FormLabel>Título da Tarefa</FormLabel>
             {/* <label for="newTodo"></label>
-                    <input type="text" id="newTodo" placeholder="Digite o título da tarefa"> 
+                    <input type="text" id="newTodo" placeholder="Digite o título da tarefa">
             <Input type="text" placeholder="Digite o título da tarefa" />
           )}
           />
-          </Form> 
+          </Form>
           {/* <div className="form-group">
                     <label for="responsible">Responsável</label>
                     <input type="text" id="responsible" placeholder="Nome do responsável">
