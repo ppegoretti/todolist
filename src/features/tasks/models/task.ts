@@ -1,7 +1,6 @@
 export type Task = {
-  id: number
+  id: string
   title: string
-  description: string
   deadline: string
   responsible: string
   status: string
@@ -11,7 +10,7 @@ export type Task = {
 }
 
 export type SubTask = {
-  text: string
+  id: string
+  description: string
   deadline: string
-  completed: boolean
 }

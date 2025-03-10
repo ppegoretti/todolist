@@ -8,8 +8,11 @@ import {
   SelectValue,
 } from '@/components/ui/select'
 import { ModeToggle } from '@/features/theme/toggle'
+import { useState } from 'react'
+import { NewTaskModal } from './new-task-modal'
 
 export function Header() {
+  const [isModalOpen, setIsModalOpen] = useState(false)
   return (
     <>
       <header className="flex justify-between items-center py-4">
@@ -66,6 +69,11 @@ export function Header() {
           </SelectContent>
         </Select>
       </section>
+      <NewTaskModal
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        onSave={() => null}
+      />
     </>
   )
 }
