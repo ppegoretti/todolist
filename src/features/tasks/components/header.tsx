@@ -18,7 +18,9 @@ export function Header() {
       <header className="flex justify-between items-center py-4">
         <h1 className="text-4xl font-medium">Lista de Atividades</h1>
         <div className="flex space-x-2">
-          <Button className="p-8 text-2xl bg-emerald-500">+ Nova Tarefa</Button>
+          <Button className="p-8 text-2xl bg-emerald-500" onClick={() => setIsModalOpen(true)}>
+            + Nova Tarefa
+          </Button>
           <Button className="p-8 text-2xl bg-blue-400">📤</Button>
           <Button className="p-8 text-2xl bg-amber-600">📥</Button>
         </div>
