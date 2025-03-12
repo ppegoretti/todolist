@@ -33,17 +33,19 @@ export function Calendar() {
   }
 
   return (
-    <div className="flex flex-col w-[960px] mx-auto px-4">
+    <div className="flex flex-col w-[1580px] mx-auto px-4">
       <Header />
       <DndContext onDragEnd={onDragEnd}>
-        {COLUMNS.map((column) => (
-          <TaskList
-            key={column.id}
-            title={column.title}
-            column={column}
-            tasks={tasks.filter((task) => task.status === column.id)}
-          />
-        ))}
+        <div className="grid grid-cols-2 gap-8">
+          {COLUMNS.map((column) => (
+            <TaskList
+              key={column.id}
+              title={column.title}
+              column={column}
+              tasks={tasks.filter((task) => task.status === column.id)}
+            />
+          ))}
+        </div>
       </DndContext>
     </div>
   )

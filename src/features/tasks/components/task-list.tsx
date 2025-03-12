@@ -15,10 +15,10 @@ export function TaskList(props: TasklistProps) {
   return (
     <section className="flex flex-col gap-4 border rounded-lg shadow-md p-4">
       <header className="flex items-center gap-4 border-b py-2">
-        <h2 className="text-3xl font-medium">{title}</h2>
+        <h2 className="text-xl font-medium">{title}</h2>
         <div
           ref={setNodeRef}
-          className="flex items-center justify-center text-2xl text-white bg-emerald-600 w-10 h-10 rounded-full"
+          className="flex items-center justify-center text-lg text-white bg-emerald-600 w-8 h-8 rounded-full"
         >
           {tasks.length}
         </div>
