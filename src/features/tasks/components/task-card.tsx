@@ -1,7 +1,15 @@
 import { useDraggable } from '@dnd-kit/core'
 import type { Task } from '../models/task'
 import { Button } from '@/components/ui/button'
-import { ChevronRight, CircleX, GripVertical, Pencil, SquareDashed, Trash2 } from 'lucide-react'
+import {
+  ChevronRight,
+  CircleX,
+  GripVertical,
+  Pencil,
+  SquareDashed,
+  Trash2,
+  TriangleAlert,
+} from 'lucide-react'
 
 type TaskCardProps = {
   task: Task
@@ -29,7 +37,10 @@ export function TaskCard(props: TaskCardProps) {
       <section className="flex flex-col gap-4">
         <div className="flex flex-1 justify-between">
           <h2 className="text-lg font-medium">{task.title}</h2>
-          <p>Alerta</p>
+          <div className="flex gap-4">
+            <TriangleAlert color="yellow" />
+            <p>Alerta</p>
+          </div>
         </div>
         <div className="flex flex-1 justify-between">
           <div className="flex flex-1 gap-4 items-center">
@@ -76,10 +87,12 @@ export function TaskCard(props: TaskCardProps) {
             <div className="flex gap-4">
               <GripVertical />
               <SquareDashed />
+
               <p>Logo</p>
             </div>
             <div className="flex gap-4">
               <p>25/03/2025</p>
+
               <CircleX />
             </div>
           </div>
