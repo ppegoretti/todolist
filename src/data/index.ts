@@ -8,6 +8,10 @@ export const tasksData: Task[] = [
     responsible: 'Eu mesmo',
     status: 'TODO',
     createdAt: '2022-09-01',
+    subtasks: [
+      { id: '0', deadline: '20/08/2025', description: 'teste1', order: '1', status: true },
+      { id: '1', deadline: '20/08/2025', description: 'teste1ss', order: '1', status: false },
+    ],
   },
   {
     id: '2',
@@ -16,6 +20,9 @@ export const tasksData: Task[] = [
     responsible: 'Eu mesmo',
     status: 'TODO',
     createdAt: '2022-09-01',
+    subtasks: [
+      { id: '0', deadline: '20/08/2025', description: 'testeddd1', order: '1', status: false },
+    ],
   },
   {
     id: '3',
@@ -24,6 +31,15 @@ export const tasksData: Task[] = [
     responsible: 'Eu mesmo',
     status: 'IN_PROGRESS',
     createdAt: '2022-09-01',
+    subtasks: [
+      {
+        id: '0',
+        deadline: '20/08/2025',
+        description: 'teste1asdfas',
+        order: '1',
+        status: false,
+      },
+    ],
   },
   {
     id: '4',
@@ -32,6 +48,9 @@ export const tasksData: Task[] = [
     responsible: 'Eu mesmo',
     status: 'IN_PROGRESS',
     createdAt: '2022-09-01',
+    subtasks: [
+      { id: '0', deadline: '20/08/2025', description: 'teste1', order: '1', status: false },
+    ],
   },
   {
     id: '5',

@@ -13,4 +13,7 @@ export type SubTask = {
   id: string
   description: string
   deadline: string
+  order: string
+  status: boolean
+  completedAt?: string
 }

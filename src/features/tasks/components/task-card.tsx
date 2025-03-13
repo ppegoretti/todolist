@@ -6,10 +6,11 @@ import {
   CircleX,
   GripVertical,
   Pencil,
-  SquareDashed,
   Trash2,
   TriangleAlert,
 } from 'lucide-react'
+import { Checkbox } from '@/components/ui/checkbox'
+import { SubTaskCard } from './sub-task'
 
 type TaskCardProps = {
   task: Task
@@ -61,41 +62,9 @@ export function TaskCard(props: TaskCardProps) {
           </div>
         </div>
         <div className="flex flex-col bg-accent rounded-xl p-2 gap-2">
-          <div className="flex flex-1 justify-between">
-            <div className="flex gap-4">
-              <GripVertical />
-              <SquareDashed />
-              <p>Logo</p>
-            </div>
-            <div className="flex gap-4">
-              <p>25/03/2025</p>
-              <CircleX />
-            </div>
-          </div>
-          <div className="flex flex-1 justify-between">
-            <div className="flex gap-4">
-              <GripVertical />
-              <SquareDashed />
-              <p>Logo</p>
-            </div>
-            <div className="flex gap-4">
-              <p>25/03/2025</p>
-              <CircleX />
-            </div>
-          </div>
-          <div className="flex flex-1 justify-between">
-            <div className="flex gap-4">
-              <GripVertical />
-              <SquareDashed />
-
-              <p>Logo</p>
-            </div>
-            <div className="flex gap-4">
-              <p>25/03/2025</p>
-
-              <CircleX />
-            </div>
-          </div>
+          {task.subtasks?.map((i) => (
+            <SubTaskCard subTask={i} key={i.id} />
+          ))}
         </div>
       </section>
     </div>
