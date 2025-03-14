@@ -1,15 +1,7 @@
 import { useDraggable } from '@dnd-kit/core'
 import type { Task } from '../models/task'
 import { Button } from '@/components/ui/button'
-import {
-  ChevronRight,
-  CircleX,
-  GripVertical,
-  Pencil,
-  Trash2,
-  TriangleAlert,
-} from 'lucide-react'
-import { Checkbox } from '@/components/ui/checkbox'
+import { ChevronRight, Pencil, Trash2, TriangleAlert } from 'lucide-react'
 import { SubTaskCard } from './sub-task'
 
 type TaskCardProps = {

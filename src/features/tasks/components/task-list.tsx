@@ -11,7 +11,7 @@ type TasklistProps = {
 
 export function TaskList(props: TasklistProps) {
   const { title, tasks, column } = props
-  const { setNodeRef } = useDroppable({ id: column.id })
+  const { setNodeRef  } = useDroppable({ id: column.id })
   return (
     <section className="flex flex-col gap-4 border rounded-lg shadow-md p-4">
       <header className="flex items-center gap-4 border-b py-2">
