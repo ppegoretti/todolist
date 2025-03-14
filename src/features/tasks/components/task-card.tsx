@@ -1,8 +1,10 @@
-import { useDraggable } from '@dnd-kit/core'
+import { DndContext, useDraggable } from '@dnd-kit/core'
 import type { Task } from '../models/task'
 import { Button } from '@/components/ui/button'
 import { ChevronRight, Pencil, Trash2, TriangleAlert } from 'lucide-react'
 import { SubTaskCard } from './sub-task'
+
+import { SortableContext, verticalListSortingStrategy } from '@dnd-kit/sortable'
 
 type TaskCardProps = {
   task: Task
@@ -53,11 +55,20 @@ export function TaskCard(props: TaskCardProps) {
             </Button>
           </div>
         </div>
-        <div className="flex flex-col bg-accent rounded-xl p-2 gap-2">
-          {task.subtasks?.map((i) => (
-            <SubTaskCard subTask={i} key={i.id} />
-          ))}
-        </div>
+        {task.subtasks && (
+          <div className="flex flex-col bg-accent rounded-xl p-2 gap-2">
+            <DndContext>
+              <SortableContext
+                items={task.subtasks?.map((i) => i.id)}
+                strategy={verticalListSortingStrategy}
+              >
+                {task.subtasks?.map((i) => (
+                  <SubTaskCard subTask={i} key={i.id} />
+                ))}
+              </SortableContext>
+            </DndContext>
+          </div>
+        )}
       </section>
     </div>
   )
