@@ -9,8 +9,15 @@ export const tasksData: Task[] = [
     status: 'TODO',
     createdAt: '2022-09-01',
     subtasks: [
-      { id: '0', deadline: '20/08/2025', description: 'teste1', order: '1', status: true },
+      { id: '0', deadline: '20/08/2025', description: 'teste1', order: '0', status: true },
       { id: '1', deadline: '20/08/2025', description: 'teste1ss', order: '1', status: false },
+      {
+        id: '2',
+        deadline: '20/08/2025',
+        description: 'teste1sdasdf',
+        order: '2',
+        status: false,
+      },
     ],
   },
   {

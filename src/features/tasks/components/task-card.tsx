@@ -1,10 +1,11 @@
-import { DndContext, useDraggable } from '@dnd-kit/core'
+import { DndContext, type DragEndEvent, useDraggable } from '@dnd-kit/core'
 import type { Task } from '../models/task'
 import { Button } from '@/components/ui/button'
 import { ChevronRight, Pencil, Trash2, TriangleAlert } from 'lucide-react'
 import { SubTaskCard } from './sub-task'
 
-import { SortableContext, verticalListSortingStrategy } from '@dnd-kit/sortable'
+import { arrayMove, SortableContext, verticalListSortingStrategy } from '@dnd-kit/sortable'
+import { useState } from 'react'
 
 type TaskCardProps = {
   task: Task
@@ -12,6 +13,7 @@ type TaskCardProps = {
 
 export function TaskCard(props: TaskCardProps) {
   const { task } = props
+  const [subTasks, setSubTasks] = useState(task.subtasks ?? [])
 
   const { attributes, listeners, setNodeRef, transform } = useDraggable({ id: task.id })
 
@@ -20,6 +22,25 @@ export function TaskCard(props: TaskCardProps) {
         transform: `translate(${transform.x}px, ${transform.y}px)`,
       }
     : undefined
+
+  function handleDragEnd(event: DragEndEvent) {
+    const { active, over } = event
+
+    console.log('onDragEnd=')
+    console.log(active, over)
+
+    if (!over) return
+
+    if (active.id !== over.id) {
+      setSubTasks((items) => {
+        const oldIndex = items.map((i) => i.id).indexOf(active.id)
+        const newIndex = items.map((i) => i.id).indexOf(over.id)
+
+        console.log(oldIndex, newIndex)
+        return arrayMove(items, oldIndex, newIndex)
+      })
+    }
+  }
 
   return (
     <div
@@ -57,12 +78,9 @@ export function TaskCard(props: TaskCardProps) {
         </div>
         {task.subtasks && (
           <div className="flex flex-col bg-accent rounded-xl p-2 gap-2">
-            <DndContext>
-              <SortableContext
-                items={task.subtasks?.map((i) => i.id)}
-                strategy={verticalListSortingStrategy}
-              >
-                {task.subtasks?.map((i) => (
+            <DndContext onDragEnd={handleDragEnd}>
+              <SortableContext items={subTasks} strategy={verticalListSortingStrategy}>
+                {subTasks.map((i) => (
                   <SubTaskCard subTask={i} key={i.id} />
                 ))}
               </SortableContext>

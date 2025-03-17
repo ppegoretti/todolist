@@ -1,7 +1,7 @@
 import { Checkbox } from '@/components/ui/checkbox'
 import { CircleX, GripVertical } from 'lucide-react'
 import type { SubTask } from '../models/task'
-import { useDraggable } from '@dnd-kit/core'
+import { useSortable } from '@dnd-kit/sortable'
 
 type SubTaskProps = {
   subTask: SubTask
@@ -10,7 +10,7 @@ type SubTaskProps = {
 export function SubTaskCard(props: SubTaskProps) {
   const { subTask } = props
   const { id, deadline, description, order, status, completedAt } = subTask
-  const { attributes, listeners, setNodeRef, transform } = useDraggable({ id: `subtask_${id}` })
+  const { attributes, listeners, setNodeRef, transform } = useSortable({ id: id })
   const style = transform
     ? {
         transform: `translate(${transform.x}px, ${transform.y}px)`,
@@ -19,8 +19,11 @@ export function SubTaskCard(props: SubTaskProps) {
 
   return (
     <div
-
+      ref={setNodeRef}
+      style={style}
       className="flex flex-1 justify-between items-center gap-2 bg-accent"
+      {...attributes}
+      {...listeners}
     >
       <div className="flex gap-4">
         <GripVertical />
