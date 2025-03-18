@@ -1,4 +1,11 @@
-import { DndContext, type DragEndEvent, useDraggable } from '@dnd-kit/core'
+import {
+  DndContext,
+  type DragEndEvent,
+  MouseSensor,
+  useDraggable,
+  useSensor,
+  useSensors,
+} from '@dnd-kit/core'
 import type { Task } from '../models/task'
 import { Button } from '@/components/ui/button'
 import { ChevronRight, Pencil, Trash2, TriangleAlert } from 'lucide-react'
@@ -6,6 +13,7 @@ import { SubTaskCard } from './sub-task'
 
 import { arrayMove, SortableContext, verticalListSortingStrategy } from '@dnd-kit/sortable'
 import { useState } from 'react'
+import { restrictToVerticalAxis } from '@dnd-kit/modifiers'
 
 type TaskCardProps = {
   task: Task
@@ -17,6 +25,17 @@ export function TaskCard(props: TaskCardProps) {
 
   const { attributes, listeners, setNodeRef, transform } = useDraggable({ id: task.id })
 
+  const mouseSensor = useSensor(MouseSensor, {
+    // Require the mouse to move by 10 pixels before activating
+    activationConstraint: {
+      distance: 5,
+      // delay: 250,
+      // tolerance: 5,
+    },
+  })
+
+  const sensors = useSensors(mouseSensor)
+
   const style = transform
     ? {
         transform: `translate(${transform.x}px, ${transform.y}px)`,
@@ -26,17 +45,15 @@ export function TaskCard(props: TaskCardProps) {
   function handleDragEnd(event: DragEndEvent) {
     const { active, over } = event
 
-    console.log('onDragEnd=')
-    console.log(active, over)
+    // console.log('onDragEnd=')
+    // console.log(active, over)
 
     if (!over) return
 
     if (active.id !== over.id) {
       setSubTasks((items) => {
-        const oldIndex = items.map((i) => i.id).indexOf(active.id)
-        const newIndex = items.map((i) => i.id).indexOf(over.id)
-
-        console.log(oldIndex, newIndex)
+        const oldIndex = items.findIndex((i) => i.id === active.id)
+        const newIndex = items.findIndex((i) => i.id === over.id)
         return arrayMove(items, oldIndex, newIndex)
       })
     }
@@ -78,7 +95,11 @@ export function TaskCard(props: TaskCardProps) {
         </div>
         {task.subtasks && (
           <div className="flex flex-col bg-accent rounded-xl p-2 gap-2">
-            <DndContext onDragEnd={handleDragEnd}>
+            <DndContext
+              onDragEnd={handleDragEnd}
+              modifiers={[restrictToVerticalAxis]}
+              sensors={sensors}
+            >
               <SortableContext items={subTasks} strategy={verticalListSortingStrategy}>
                 {subTasks.map((i) => (
                   <SubTaskCard subTask={i} key={i.id} />

@@ -2,6 +2,9 @@ import { Checkbox } from '@/components/ui/checkbox'
 import { CircleX, GripVertical } from 'lucide-react'
 import type { SubTask } from '../models/task'
 import { useSortable } from '@dnd-kit/sortable'
+import { useState } from 'react'
+
+import { CSS } from '@dnd-kit/utilities'
 
 type SubTaskProps = {
   subTask: SubTask
@@ -10,12 +13,13 @@ type SubTaskProps = {
 export function SubTaskCard(props: SubTaskProps) {
   const { subTask } = props
   const { id, deadline, description, order, status, completedAt } = subTask
-  const { attributes, listeners, setNodeRef, transform } = useSortable({ id: id })
-  const style = transform
-    ? {
-        transform: `translate(${transform.x}px, ${transform.y}px)`,
-      }
-    : undefined
+  const { attributes, listeners, setNodeRef, transform, transition } = useSortable({ id: id })
+  const [localStatus, setLocalStatus] = useState(status)
+
+  const style = {
+    transform: CSS.Transform.toString(transform),
+    transition,
+  }
 
   return (
     <div
@@ -27,7 +31,12 @@ export function SubTaskCard(props: SubTaskProps) {
     >
       <div className="flex gap-4">
         <GripVertical />
-        <Checkbox checked={status} onCheckedChange={() => {}} />
+        <Checkbox
+          checked={localStatus}
+          onCheckedChange={() => {
+            setLocalStatus((p) => !p)
+          }}
+        />
         <p>{description}</p>
       </div>
       <div className="flex gap-4">
