@@ -28,7 +28,8 @@ export const tasksData: Task[] = [
     status: 'TODO',
     createdAt: '2022-09-01',
     subtasks: [
-      { id: '0', deadline: '20/08/2025', description: 'testeddd1', order: '1', status: false },
+      { id: '0', deadline: '20/08/2025', description: 'teste1', order: '0', status: true },
+      { id: '1', deadline: '20/08/2025', description: 'teste1ss', order: '1', status: false },
     ],
   },
   {
@@ -55,9 +56,7 @@ export const tasksData: Task[] = [
     responsible: 'Patrick',
     status: 'IN_PROGRESS',
     createdAt: '2022-09-01',
-    subtasks: [
-      { id: '0', deadline: '20/08/2025', description: 'teste1', order: '1', status: false },
-    ],
+    subtasks: [],
   },
   {
     id: '5',
@@ -66,6 +65,7 @@ export const tasksData: Task[] = [
     responsible: 'Patrick',
     status: 'DONE',
     createdAt: '2022-09-01',
+    subtasks: [],
   },
   {
     id: '6',

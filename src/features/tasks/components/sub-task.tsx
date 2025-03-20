@@ -25,7 +25,7 @@ export function SubTaskCard(props: SubTaskProps) {
     <div
       ref={setNodeRef}
       style={style}
-      className="flex flex-1 justify-between items-center gap-2 bg-accent"
+      className="flex flex-1 justify-between items-center gap-2 bg-accent border-solid border-b border-gray-700  p-1 last:border-8"
       {...attributes}
       {...listeners}
     >

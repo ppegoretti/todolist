@@ -52,7 +52,7 @@ export function Calendar() {
     <div className="flex flex-col w-[1580px] mx-auto px-4">
       <Header />
       <DndContext onDragEnd={onDragEnd} sensors={sensors}>
-        <div className="grid grid-cols-2 gap-8">
+        <div className="grid grid-cols-2 gap-8 ">
           {COLUMNS.map((column) => (
             <TaskList
               key={column.id}
