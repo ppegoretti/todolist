@@ -1,8 +1,8 @@
-import { tasksData } from '@/data'
 import { COLUMNS } from '@/data/COLUMNS'
 import { Header } from '@/features/tasks/components/header'
 import { TaskList } from '@/features/tasks/components/task-list'
 import type { Task } from '@/features/tasks/models/task'
+import { useTaskStore } from '@/store/task'
 import {
   DndContext,
   MouseSensor,
@@ -10,10 +10,9 @@ import {
   useSensors,
   type DragEndEvent,
 } from '@dnd-kit/core'
-import { useState } from 'react'
 
 export function Calendar() {
-  const [tasks, setTasks] = useState(tasksData)
+  const { tasks, onUpdateTasks } = useTaskStore()
 
   const mouseSensor = useSensor(MouseSensor, {
     // Require the mouse to move by 10 pixels before activating
@@ -36,16 +35,17 @@ export function Calendar() {
     const taskId = active.id as string
     const newStatus = over.id as Task['status']
 
-    setTasks((previous) =>
-      previous.map((task) =>
-        task.id === taskId
-          ? {
-              ...task,
-              status: newStatus,
-            }
-          : task,
-      ),
-    )
+    onUpdateTasks(taskId, newStatus)
+    // setTasks((previous) =>
+    //   previous.map((task) =>
+    //     task.id === taskId
+    //       ? {
+    //           ...task,
+    //           status: newStatus,
+    //         }
+    //       : task,
+    //   ),
+    // )
   }
 
   return (

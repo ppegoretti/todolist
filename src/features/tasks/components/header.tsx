@@ -10,9 +10,11 @@ import {
 import { ModeToggle } from '@/features/theme/toggle'
 import { useState } from 'react'
 import { NewTaskModal } from './new-task-modal'
+import { useTaskStore } from '@/store/task'
 
 export function Header() {
   const [isModalOpen, setIsModalOpen] = useState(false)
+  const { onSave } = useTaskStore()
   return (
     <>
       <header className="flex justify-between items-center py-4">
@@ -74,7 +76,7 @@ export function Header() {
       <NewTaskModal
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
-        onSave={() => null}
+        onSave={onSave}
       />
     </>
   )

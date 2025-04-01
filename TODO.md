@@ -1,4 +1,5 @@
 [x] layout with tailwindcss
+[x] update drop area
 [ ] create task with zustand store
 [ ] update task with zustand store
 [ ] delete task with zustand store
