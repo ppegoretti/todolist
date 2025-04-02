@@ -65,10 +65,11 @@ export function NewTaskModal(props: NewTaskModalProps) {
   })
 
   const onSubmit = (data: NewTask) => {
+    console.log({ data })
     onSave({
       id: editingTask?.id || Date.now().toString(),
       ...data,
-      status: editingTask ? editingTask.status : 'todo',
+      status: editingTask ? editingTask.status : 'TODO',
       createdAt: editingTask ? editingTask.createdAt : new Date().toISOString(),
       subtasks: [],
     })
@@ -146,7 +147,9 @@ export function NewTaskModal(props: NewTaskModalProps) {
                     <Input
                       type="date"
                       {...field}
-                      className={methods.formState.errors.deadline ? 'border-red-500' : ''}
+                      className={
+                        methods.formState.errors.deadline ? 'border-red-500' : 'stroke-blue-700'
+                      }
                     />
                   </FormControl>
 

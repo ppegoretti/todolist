@@ -114,6 +114,10 @@
   --color-sidebar-ring: var(--sidebar-ring);
 }
 
+input {
+  color-scheme: dark;
+}
+
 @layer base {
   * {
     @apply border-border outline-ring/50;

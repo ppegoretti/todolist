@@ -10,7 +10,10 @@ interface TaskStore {
 
 export const useTaskStore = create<TaskStore>((set) => ({
   tasks: tasksData,
-  onSave: (newTask) => set((state) => ({ tasks: [...state.tasks, newTask] })),
+  onSave: (newTask) => {
+    console.log({ newTask })
+    set((state) => ({ tasks: [...state.tasks, newTask] }))
+  },
 
   onUpdateTasks: (taskId: string, newStatus: string) =>
     set((state) => ({

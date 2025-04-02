@@ -8,19 +8,19 @@ import {
   SelectValue,
 } from '@/components/ui/select'
 import { ModeToggle } from '@/features/theme/toggle'
-import { useState } from 'react'
 import { NewTaskModal } from './new-task-modal'
 import { useTaskStore } from '@/store/task'
+import { useModalStore } from '@/store/modal'
 
 export function Header() {
-  const [isModalOpen, setIsModalOpen] = useState(false)
+  const { isOpen, onOpen } = useModalStore()
   const { onSave } = useTaskStore()
   return (
     <>
       <header className="flex justify-between items-center py-4">
         <h1 className="text-4xl font-medium">Lista de Atividades</h1>
         <div className="flex space-x-2">
-          <Button className="p-5 text-sm bg-emerald-500" onClick={() => setIsModalOpen(true)}>
+          <Button className="p-5 text-sm bg-emerald-500" onClick={() => onOpen()}>
             + Nova Tarefa
           </Button>
           <Button className="p-5 text-sm bg-blue-400">📤</Button>
@@ -73,11 +73,7 @@ export function Header() {
           </SelectContent>
         </Select>
       </section>
-      <NewTaskModal
-        isOpen={isModalOpen}
-        onClose={() => setIsModalOpen(false)}
-        onSave={onSave}
-      />
+      <NewTaskModal isOpen={isOpen} onClose={onOpen} onSave={onSave} />
     </>
   )
 }

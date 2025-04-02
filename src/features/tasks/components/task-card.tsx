@@ -97,7 +97,7 @@ export function TaskCard(props: TaskCardProps) {
                     </Button>
                   </AccordionTrigger>
                 )}
-                <Button className="p-5 text-sm bg-blue-400">
+                <Button className="p-5 text-sm bg-blue-400" onClick={() => null}>
                   <Pencil />
                 </Button>
                 <Button className="p-5 text-sm bg-red-400">
