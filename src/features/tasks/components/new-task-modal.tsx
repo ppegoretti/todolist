@@ -22,6 +22,8 @@ import { Plus, X } from 'lucide-react'
 import { useFieldArray, useForm } from 'react-hook-form'
 import { z } from 'zod'
 import type { Task } from '../models/task'
+import { useTaskStore } from '@/store/task'
+import { useEffect } from 'react'
 
 type NewTaskModalProps = {
   isOpen: boolean
@@ -48,7 +50,10 @@ const taskSchema = z.object({
 type NewTask = z.infer<typeof taskSchema>
 
 export function NewTaskModal(props: NewTaskModalProps) {
-  const { isOpen, onClose, onSave, editingTask = null } = props
+  const { isOpen, onClose, onSave } = props
+
+  const { editingTask } = useTaskStore()
+  console.log(editingTask)
   const methods = useForm<NewTask>({
     resolver: zodResolver(taskSchema),
     defaultValues: {
@@ -77,6 +82,12 @@ export function NewTaskModal(props: NewTaskModalProps) {
     // setSubtasks([])
     onClose()
   }
+
+  useEffect(() => {
+    if (editingTask) {
+      methods.setValue('title', editingTask?.title)
+    }
+  }, [editingTask, methods.setValue])
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>

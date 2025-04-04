@@ -20,6 +20,7 @@ import { SubTaskCard } from './sub-task'
 import { arrayMove, SortableContext, verticalListSortingStrategy } from '@dnd-kit/sortable'
 import { useState } from 'react'
 import { restrictToVerticalAxis } from '@dnd-kit/modifiers'
+import { useModalStore } from '@/store/modal'
 
 type TaskCardProps = {
   task: Task
@@ -28,6 +29,8 @@ type TaskCardProps = {
 export function TaskCard(props: TaskCardProps) {
   const { task } = props
   const [subTasks, setSubTasks] = useState(task.subtasks ?? [])
+
+  const { onOpen } = useModalStore()
 
   const { attributes, listeners, setNodeRef, transform } = useDraggable({ id: task.id })
 
@@ -97,7 +100,7 @@ export function TaskCard(props: TaskCardProps) {
                     </Button>
                   </AccordionTrigger>
                 )}
-                <Button className="p-5 text-sm bg-blue-400" onClick={() => null}>
+                <Button className="p-5 text-sm bg-blue-400" onClick={() => onOpen(task.id)}>
                   <Pencil />
                 </Button>
                 <Button className="p-5 text-sm bg-red-400">
@@ -105,23 +108,23 @@ export function TaskCard(props: TaskCardProps) {
                 </Button>
               </div>
             </div>
-            {!!task.subtasks?.length && (
-              <div className="flex flex-col bg-accent rounded-xl p-2 gap-2 ">
-                <DndContext
-                  onDragEnd={handleDragEnd}
-                  modifiers={[restrictToVerticalAxis]}
-                  sensors={sensors}
-                >
-                  <SortableContext items={subTasks} strategy={verticalListSortingStrategy}>
-                    {subTasks.map((i) => (
-                      <SubTaskCard subTask={i} key={i.id} />
-                    ))}
-                  </SortableContext>
-                </DndContext>
-              </div>
-            )}
-
-            <AccordionContent>Yes. It adheres to the WAI-ARIA design pattern.</AccordionContent>
+            <AccordionContent>
+              {!!task.subtasks?.length && (
+                <div className="flex flex-col bg-accent rounded-xl p-2 gap-2 ">
+                  <DndContext
+                    onDragEnd={handleDragEnd}
+                    modifiers={[restrictToVerticalAxis]}
+                    sensors={sensors}
+                  >
+                    <SortableContext items={subTasks} strategy={verticalListSortingStrategy}>
+                      {subTasks.map((i) => (
+                        <SubTaskCard subTask={i} key={i.id} />
+                      ))}
+                    </SortableContext>
+                  </DndContext>
+                </div>
+              )}
+            </AccordionContent>
           </section>
         </AccordionItem>
       </Accordion>

@@ -73,7 +73,7 @@ export function Header() {
           </SelectContent>
         </Select>
       </section>
-      <NewTaskModal isOpen={isOpen} onClose={onOpen} onSave={onSave} />
+      <NewTaskModal isOpen={isOpen} onClose={() => onOpen()} onSave={onSave} />
     </>
   )
 }

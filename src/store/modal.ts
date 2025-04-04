@@ -1,4 +1,5 @@
 import { create } from 'zustand'
+import { taskStore } from './task'
 
 interface ModalStore {
   isOpen: boolean
@@ -8,7 +9,11 @@ interface ModalStore {
 export const useModalStore = create<ModalStore>((set) => ({
   isOpen: false,
   onOpen: (id) => {
-    console.log({ id })
+    // console.log({ id })
+    if (id) {
+      const { onEditTask } = taskStore.getState()
+      onEditTask(id)
+    }
     set((state) => ({ isOpen: !state.isOpen }))
   },
 }))

@@ -1,6 +1,6 @@
+import { Calendar } from '@/pages/calendar'
+import { Home } from '@/pages/home'
 import { Route, Routes } from 'react-router'
-import { Home } from '../pages/home'
-import { Calendar } from '../pages/calendar'
 
 export function AppRoutes() {
   return (
